@@ -1,5 +1,11 @@
 <?php
 
-$app-> get('/home', function($request, $response){
-    $this->view->render($response, 'home.twig');
+use App\Controllers\HomeController;
+
+
+$app->group('/home', function(){
+    $this->get('', HomeController::class.':index');
+    $this->get('/login', HomeController::class.':login');
+    $this->get('/logout', HomeController::class.':logout');
+    $this->get('/register', HomeController::class.':register');
 });
