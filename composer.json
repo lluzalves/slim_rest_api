@@ -1,7 +1,9 @@
 {
     "require": {
         "slim/slim": "^3.11",
-        "slim/twig-view": "^2.4"
+        "slim/twig-view": "^2.4",
+        "tuupola/slim-jwt-auth": "^3.1",
+        "illuminate/database": "^5.7"
     },
     "autoload": {
         "psr-4": {

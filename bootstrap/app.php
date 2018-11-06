@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+include 'bootstrap.php';
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -13,11 +13,6 @@ $app = new \Slim\App([
 
 //retrive container
 $container = $app->getContainer();
-
-//database access
-$container['db'] = function(){
-    return new PDO('mysql:dbname=slim_app;host=localhost:3306', 'admin','pass');
-};
 
 //register component on container
 $container ['view'] = function ($container){
@@ -35,3 +30,4 @@ $container ['view'] = function ($container){
 };
 
 require __DIR__.'/../routes/web.php';
+require __DIR__.'/../routes/api.php';
