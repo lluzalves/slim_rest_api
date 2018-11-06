@@ -4,11 +4,15 @@ include 'bootstrap.php';
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Middleware\Logging as AppLogging;
+
 $app = new \Slim\App([
     'settings' => [
         'displayErrorDetails'  => true,
     ]
 ]);
+
+$app->add(new AppLogging());
 
 
 //retrive container
