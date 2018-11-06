@@ -1,5 +1,5 @@
 <?php
 
 $app-> get('/home', function($request, $response){
-    echo "Home";
+    $this->view->render($response, 'home.twig');
 });
