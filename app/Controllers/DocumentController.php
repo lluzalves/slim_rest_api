@@ -6,6 +6,8 @@ use App\Models\Document;
 use Slim\Http\UploadedFile;
 
 class DocumentController extends BaseController {
+
+    protected $filename;
     
      public function all($_request, $response,$args){
         $_document = new Document();
@@ -13,11 +15,7 @@ class DocumentController extends BaseController {
     
         $payload = [];
         foreach($documents as $_doc){
-           $payload[$_doc->id] = ['description' => $_doc->description,
-                                  'user_id' => $_doc->user_id,
-                                  'file_url' => $_doc->file_url,
-                                  'created_at' => $_doc->created_at
-                               ];
+           $payload[$_doc->id] = $_doc->output();
         }
         return $response->withStatus(200)->withJson($payload);
      }
@@ -33,18 +31,15 @@ class DocumentController extends BaseController {
             $filename = $this->moveUploadedFile($directory, $uploadedFile);
             $response->write('uploaded ' . $filename . '<br/>');
         }
-        
-        $_document = $request->getParsedBodyParam('description', '');
 
         $document = new Document();
-        $document->description = $_document;
+        $document->description = $request->getParsedBodyParam('description', '');
         $document->user_id = 1;
-        $document->file_url = '';
+        $document->file_url = $directory . DIRECTORY_SEPARATOR . $filename;
         $document->save();
     
         if($document->id){
-            $payload = ['document_id' => $document->id,
-                        'document_uri' => '/documents/' . $document->id];
+            $payload = $document->output();
             return $response->withStatus(200)->withJson($payload);
         }else{
             return $response->withStatus(400);
@@ -64,27 +59,15 @@ class DocumentController extends BaseController {
 
     public function deleteAll($request, $response,$args){
         $document = Document::find($args['document_id']);
-
-        $document = new Document();
-        $document->description = $_document;
-        $document->user_id = 1;
-        $document->file_url = '';
-        $document->save();
-    
-        if($document->id){
-            $payload = ['document_id' => $document->id,
-                        'document_uri' => '/documents/' . $document->id];
-            return $response->withStatus(200)->withJson($payload);
-        }else{
-            return $response->withStatus(400);
-        }
     }
 
     public function moveUploadedFile($directory, UploadedFile $uploadedFile){
     $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-    $basename = bin2hex(random_bytes(8)); 
-    $filename = sprintf('%s.%0.8s', $basename, $extension);
     
+    $basename = bin2hex(random_bytes(8)); 
+    
+    $filename = sprintf('%s.%0.8s', $basename, $extension);
+
     $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
     return $filename;
