@@ -1,18 +1,10 @@
 <?php
 
-use App\Models\Document;
+use App\Controllers\DocumentController;
 
-$app->get('/documents',function($request,$response,$args){
-     $_document = new Document();
-     $documents = $_document->all();
-
-     $payload = [];
-     foreach($documents as $_doc){
-        $payload[$_doc->id] = ['description' => $_doc->description,
-                               'user_id' => $_doc->user_id,
-                               'file_url' => $_doc->file_url,
-                               'created_at' => $_doc->created_at
-                            ];
-     }
-     return $response->withStatus(200)->withJson($payload);
+$app->group('/documents', function(){
+    $this->get('', DocumentController::class.':all');
+    $this->post('',DocumentController::class.':add');
+    $this->delete('',DocumentController::class.':deleteAll');
+    $this->delete('/{document_id}',DocumentController::class.':delete');
 });

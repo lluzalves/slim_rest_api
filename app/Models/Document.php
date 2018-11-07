@@ -2,6 +2,6 @@
 
 namespace App\Models;
 
-class Document extends \Illuminate\Database\Eloquent\Model{
+class Document extends BaseModel{
     
 }

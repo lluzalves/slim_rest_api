@@ -5,7 +5,7 @@ use slim_app;
 
 
    -- create user table
-  create table if not exists `slim_app`.`user`(
+  create table if not exists `slim_app`.`users`(
   `id` int auto_increment not null,
   `username` varchar(100) not null,
   `email` varchar(100) not null,
@@ -22,6 +22,7 @@ use slim_app;
   `user_id` int (10) not null,
   `file_url` varchar(255) not null,
   `created_at` datetime not null,
+  `updated_at` datetime not null,
    primary key (id),
-   foreign key (user_id) references user(id))
+   foreign key (user_id) references users(id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;

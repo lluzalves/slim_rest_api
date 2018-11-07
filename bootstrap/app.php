@@ -5,6 +5,7 @@ include 'bootstrap.php';
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\Middleware\Logging as AppLogging;
+use App\Middleware\Authentication as Auth;
 
 $app = new \Slim\App([
     'settings' => [
@@ -12,6 +13,7 @@ $app = new \Slim\App([
     ]
 ]);
 
+// $app->add(new Auth());
 $app->add(new AppLogging());
 
 

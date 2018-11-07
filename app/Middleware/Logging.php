@@ -11,5 +11,6 @@ class Logging{
         $response = $next($request,$response);
         
         return $response;
+        
     }
 }
