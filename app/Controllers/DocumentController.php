@@ -22,37 +22,18 @@ class DocumentController extends BaseController {
         return $response->withStatus(200)->withJson($payload);
      }
 
-
     public function add($request, $response,$args){
 
         $directory = "assets/files";
 
         $uploadedFiles = $request->getUploadedFiles();
-    
-        // handle single input with single file upload
+
         $uploadedFile = $uploadedFiles['file'];
         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($directory, $uploadedFile);
             $response->write('uploaded ' . $filename . '<br/>');
         }
-    
-    
-        // handle multiple inputs with the same key
-        foreach ($uploadedFiles['file'] as $uploadedFile) {
-            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                $filename = $this->moveUploadedFile($directory, $uploadedFile);
-                $response->write('uploaded ' . $filename . '<br/>');
-            }
-        }
-    
-        // handle single input with multiple file uploads
-        foreach ($uploadedFiles['file'] as $uploadedFile) {
-            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                $filename = $this->moveUploadedFile($directory, $uploadedFile);
-                $response->write('uploaded ' . $filename . '<br/>');
-            }
-        }
-    
+        
         $_document = $request->getParsedBodyParam('description', '');
 
         $document = new Document();
@@ -69,7 +50,6 @@ class DocumentController extends BaseController {
             return $response->withStatus(400);
         }
     }
-
 
     public function delete($request, $response,$args){
         $document = Document::find($args['document_id']);
@@ -104,7 +84,7 @@ class DocumentController extends BaseController {
     $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
     $basename = bin2hex(random_bytes(8)); 
     $filename = sprintf('%s.%0.8s', $basename, $extension);
-
+    
     $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
     return $filename;

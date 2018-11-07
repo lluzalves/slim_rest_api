@@ -2,7 +2,7 @@
 
 namespace App\Middleware;
 
-class Logging{
+class Logger{
 
     public function __invoke($request, $response, $next){
         
