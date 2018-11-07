@@ -8,9 +8,6 @@ class Authentication{
 
     public function __invoke($request, $response, $next){
 
-        var_dump(apache_request_headers());
-        die();
-
         $auth = $request->getHeader('Authorization');
         
         $_apikey = $auth[0];

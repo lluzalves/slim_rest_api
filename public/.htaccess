@@ -1,6 +1,7 @@
 RewriteEngine On
+CGIPassAuth On
+SetEnvIf Authorization "(.*)" HTTP
+RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{HTTP:Authorization} ^(.*)
-CGIPassAuth On
 RewriteRule ^ index.php [QSA,L]

@@ -13,7 +13,7 @@ $app = new \Slim\App([
     ]
 ]);
 
-// $app->add(new Auth());
+$app->add(new Auth());
 $app->add(new AppLogging());
 
 
