@@ -1,1 +1,1 @@
-# slim_app
+# Project Slim App - Documents REST Api
