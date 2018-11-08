@@ -10,8 +10,12 @@ class Authentication{
 
         $auth = $request->getHeader('Authorization');
         
+        if(empty($auth[0])){
+            return $response->withStatus(401);
+        }
+        
         $_apikey = $auth[0];
-        $apikey = substr($_apikey, strpos($_apikey,'')+1);
+        $apikey = substr($_apikey, strpos($_apikey,'')+7);
                     
         $user = new User();
         

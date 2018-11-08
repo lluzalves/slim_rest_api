@@ -22,7 +22,7 @@ class DocumentController extends BaseController {
 
     public function add($request, $response,$args){
 
-        $directory = "assets/files";
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'documentos';
 
         $uploadedFiles = $request->getUploadedFiles();
 
@@ -54,6 +54,21 @@ class DocumentController extends BaseController {
             return $response->withStatus(400);
         }else{
             return $response->withStatus(204);
+        }
+    }
+
+    public function update($request, $response, $next) {
+        $_isvalidated = $request->getParsedBodyParam('is_validated');
+        
+        $document = Document::find($args['document_id']);
+        $document->is_validated = $_isvalidated;
+        $document->save();
+
+        if($document->id){
+            $payload = $document->output();
+            return $response->withStatus(201)->withJson($payload);
+        }else{
+            return $response->withStatus(400);
         }
     }
 

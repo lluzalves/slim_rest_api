@@ -6,12 +6,17 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use App\Middleware\Logger as Logger;
 use App\Middleware\Authentication as Auth;
-
 $app = new \Slim\App([
     'settings' => [
         'displayErrorDetails'  => true,
     ]
 ]);
+
+$app ->add(function ($request, $response, $next) {
+    $response = $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    $response = $next ($request, $response);
+    return $response;
+});
 
 $app->add(new Auth());
 $app->add(new Logger());
