@@ -11,7 +11,8 @@ use slim_app;
   `email` varchar(100) not null,
   `password` varchar(255) not null,
   `profile_icon` varchar(255) not null,
-  `apikey` varchar(255) not null,
+  `token` CHAR(16) NULL,
+  `token_expiration` DATETIME NULL,
    primary key (id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;
 

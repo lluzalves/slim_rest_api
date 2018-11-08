@@ -4,26 +4,36 @@ namespace App\Controllers;
 
 use App\Models\Document;
 use Slim\Http\UploadedFile;
+use App\Models\User;
+use App\Middleware\Authentication;
 
 class DocumentController extends BaseController {
 
     protected $filename;
+    protected $payload = [];
+    protected $currentUser;
     
-     public function all($_request, $response,$args){
-        $_document = new Document();
-        $documents = $_document->all();
+     public function all($request, $response,$args){
+        $currentUser = $this->getCurrentUser($request);
+
+        $documents = Document::where('user_id', '=', $currentUser->id)->get();
     
-        $payload = [];
-        foreach($documents as $_doc){
-           $payload[$_doc->id] = $_doc->output();
+        if(count($documents)<=0){
+            return $this->response($response,'No documents available for this user',204);
         }
+
+        foreach($documents as $_document){
+           $payload[$_document->id] = $_document->output();
+        }
+
         return $response->withStatus(200)->withJson($payload);
      }
 
     public function add($request, $response,$args){
 
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'documentos';
-
+        $currentUser = $this->getCurrentUser($request);
+        
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw';
         $uploadedFiles = $request->getUploadedFiles();
 
         $uploadedFile = $uploadedFiles['file'];
@@ -34,7 +44,8 @@ class DocumentController extends BaseController {
 
         $document = new Document();
         $document->description = $request->getParsedBodyParam('description', '');
-        $document->user_id = 1;
+        $document->user_id = $currentUser->id;
+        $document->is_validated = false;
         $document->file_url = $directory . DIRECTORY_SEPARATOR . $filename;
         $document->save();
     
@@ -47,21 +58,23 @@ class DocumentController extends BaseController {
     }
 
     public function delete($request, $response,$args){
-        $document = Document::find($args['document_id']);
+        $document = Document::where('document_id', '=', $args['document_id'])
+                            ->where('user_id', '=', $this->getCurrentUserId($request)->id);
         $document->delete();
    
         if($document->exists){
-            return $response->withStatus(400);
+            return $this->response($response,'Unable to complete request',400);
         }else{
-            return $response->withStatus(204);
+            return $this->response($response,'Deleted successfully',204);
         }
     }
 
     public function update($request, $response, $next) {
         $_isvalidated = $request->getParsedBodyParam('is_validated');
         
-        $document = Document::find($args['document_id']);
-        $document->is_validated = $_isvalidated;
+        $document = Document::where('document_id', '=', $args['document_id'])
+                            ->where('user_id', '=', $this->getCurrentUserId($request)->id);
+
         $document->save();
 
         if($document->id){
@@ -73,19 +86,17 @@ class DocumentController extends BaseController {
     }
 
     public function deleteAll($request, $response,$args){
-        $document = Document::find($args['document_id']);
+        $documents = Document::where('user_id', '=', $this->getCurrentUser($request)->id);
     }
 
     public function moveUploadedFile($directory, UploadedFile $uploadedFile){
-    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $basename = bin2hex(random_bytes(8)); 
+        $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+        return $filename;
+    }
     
-    $basename = bin2hex(random_bytes(8)); 
-    
-    $filename = sprintf('%s.%0.8s', $basename, $extension);
-
-    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-
-    return $filename;
-}
-
 }

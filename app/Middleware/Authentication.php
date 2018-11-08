@@ -4,27 +4,36 @@ namespace App\Middleware;
 
 use App\Models\User;
 
-class Authentication{
+class Authentication {
 
     public function __invoke($request, $response, $next){
 
         $auth = $request->getHeader('Authorization');
         
         if(empty($auth[0])){
-            return $response->withStatus(401);
+            return $this->denyAccess($response,'Missing credentials');
         }
-        
-        $_apikey = $auth[0];
-        $apikey = substr($_apikey, strpos($_apikey,'')+7);
+
+        $token = $this->getUserToken($auth[0]);
                     
         $user = new User();
-        
-        if(!$user->auth($apikey)){
-            return $response->withStatus(401);
+        if(!$user->auth($token)){
+            return $this->denyAccess($response,'Invalid credentials');
         }
 
         $response = $next($request,$response);
         
         return $response;  
     }
+
+    public function denyAccess($response,$status){
+        return $response->withJson(["status" => $status ,
+                                    "code"   => 401])
+                        ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function getUserToken($header){
+        return substr($header, strpos($header,'')+7);
+    }
+
 }

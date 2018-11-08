@@ -9,6 +9,7 @@ use App\Middleware\Authentication as Auth;
 $app = new \Slim\App([
     'settings' => [
         'displayErrorDetails'  => true,
+        'determineRouteBeforeAppMiddleware' => true,
     ]
 ]);
 
@@ -34,5 +35,4 @@ $container ['view'] = function ($container){
     return $view;
 };
 
-require __DIR__.'/../routes/web.php';
 require __DIR__.'/../routes/api.php';
