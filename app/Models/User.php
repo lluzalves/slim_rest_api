@@ -8,22 +8,26 @@ class User extends BaseModel
 {
 
     protected $currentUser;
+    protected $fillable = ['username', 'password'];
 
     static function user()
     {
         return new User();
     }
 
-    public function auth($token)
+    public function verify($token)
     {
-        $user = User::where('token', '=', $token)->take(1)->get();
+        $user = User::where('token', '=', $token)
+            ->take(1)
+            ->get();
 
         $this->currentUser = $user[0];
 
         return ($user[0]->exists && $this->isUserTokenStillValid($this->currentUser)) ? true : false;
     }
 
-    public function isUserTokenStillValid($currentUser)
+
+    private function isUserTokenStillValid($currentUser)
     {
         $date = new DateTime($currentUser->token_expiration);
 
@@ -32,11 +36,21 @@ class User extends BaseModel
 
     public function currentUser($token)
     {
-
-        $isAuth = $this->auth($token);
+        $isAuth = $this->verify($token);
 
         if ($isAuth) {
             return $this->currentUser;
         }
+    }
+
+    public function retrieveUser($username, $password)
+    {
+        $user = User::where('username', '=', $username)
+            ->where('password', '=', $password)
+            ->take(1)
+            ->get();
+
+        $this->currentUser = $user[0];
+        if ($user[0]->exists) return $user[0];
     }
 }

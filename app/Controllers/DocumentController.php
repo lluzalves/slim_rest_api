@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 use App\Models\Document;
 use Slim\Http\UploadedFile;
-use App\Models\User;
-use App\Middleware\Authentication;
 
 class DocumentController extends BaseController
 {
