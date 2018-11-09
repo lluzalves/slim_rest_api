@@ -20,14 +20,14 @@ class User extends BaseModel
 
         $this->currentUser = $user[0];
 
-        return ($user[0]->exists && $this->isUserTokenStillValid($currentUser)) ? true : false;
+        return ($user[0]->exists && $this->isUserTokenStillValid($this->currentUser)) ? true : false;
     }
 
     public function isUserTokenStillValid($currentUser)
     {
         $date = new DateTime($currentUser->token_expiration);
 
-        return $date->format('Y-m-d') == date('Y-m-d');
+        return $date->format('Y-m-d') >= date('Y-m-d');
     }
 
     public function currentUser($token)
