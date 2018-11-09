@@ -2,15 +2,17 @@
 
 namespace App\Middleware;
 
-class Logger{
+class Logger
+{
 
-    public function __invoke($request, $response, $next){
-        
+    public function __invoke($request, $response, $next)
+    {
+
         error_log($request->getMethod() . "--" . $request->getUri());
-        
-        $response = $next($request,$response);
-        
+
+        $response = $next($request, $response);
+
         return $response;
-        
+
     }
 }
