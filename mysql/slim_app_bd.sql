@@ -11,8 +11,10 @@ use slim_app;
   `email` varchar(100) not null,
   `password` varchar(255) not null,
   `profile_icon` varchar(255) not null,
-  `token` CHAR(16) NULL,
-  `token_expiration` DATETIME NULL,
+  `token` char(16) null,
+  `token_expiration` DATETIME not null,
+   unique(username),
+   unique(email),
    primary key (id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;
 
@@ -24,6 +26,7 @@ use slim_app;
   `file_url` varchar(255) not null,
   `created_at` datetime not null,
   `updated_at` datetime not null,
+  `notification` char(5),
    primary key (id),
    foreign key (user_id) references users(id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;

@@ -14,7 +14,7 @@ class DocumentController extends BaseController
 
     public function all($request, $response)
     {
-        $currentUser = $this->getCurrentUser($request);
+        $currentUser = $this->currentUser($request);
 
         $documents = Document::where('user_id', '=', $currentUser->id)->get();
 
@@ -32,7 +32,7 @@ class DocumentController extends BaseController
     public function add($request, $response)
     {
 
-        $currentUser = $this->getCurrentUser($request);
+        $currentUser = $this->currentUser($request);
 
         $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw';
         $uploadedFiles = $request->getUploadedFiles();
@@ -73,6 +73,20 @@ class DocumentController extends BaseController
 
     public function update($request, $response, $args)
     {
+        $document = Document::where('document_id', '=', $args['document_id'])
+            ->where('user_id', '=', $this->getCurrentUserId($request)->id);
+
+        $document->save();
+
+        if ($document->id) {
+            $payload = $document->output();
+            return $response->withStatus(201)->withJson($payload);
+        } else {
+            return $response->withStatus(400);
+        }
+    }
+
+    public function validate($request, $response, $args){
         $_isvalidated = $request->getParsedBodyParam('is_validated');
 
         $document = Document::where('document_id', '=', $args['document_id'])
@@ -90,7 +104,19 @@ class DocumentController extends BaseController
 
     public function deleteAll($request, $response, $args)
     {
-        $documents = Document::where('user_id', '=', $this->getCurrentUser($request)->id);
+        $documents = Document::where('user_id', '=', $this->currentUser($request)->id);
+
+        foreach ($documents as $_document) {
+            $_document->delete();
+        }
+
+        $documents = Document::where('user_id', '=', $this->currentUser($request)->id);
+
+        if ($documents->isEmpty()) {
+            return $this->response($response, 'All documents have been deleted successfully', 400);
+        } else {
+            return $this->response($response, 'Unable to complete request', 400);
+        }
     }
 
     public function moveUploadedFile($directory, UploadedFile $uploadedFile)

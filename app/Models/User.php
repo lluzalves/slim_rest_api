@@ -7,6 +7,7 @@ use DateTime;
 class User extends BaseModel
 {
 
+    public $timestamps = false;
     protected $currentUser;
     protected $fillable = ['username', 'password'];
 
@@ -15,42 +16,74 @@ class User extends BaseModel
         return new User();
     }
 
+    public function output()
+    {
+
+        $output = [];
+        $output['email'] = $this->email;
+        $output['token_expiration'] = $this->token_expiration;
+        $output['username'] = $this->username;
+        $output['user_uri'] = '/users/' . $this->id;
+        $output['created_at'] = $this->created_at;
+        $output['updated_at'] = $this->updated_at;
+
+        return $output;
+    }
+
     public function verify($token)
     {
-        $user = User::where('token', '=', $token)
-            ->take(1)
-            ->get();
+        $user = User::where('token', '=', $token)->take(1)->get();
 
         $this->currentUser = $user[0];
 
-        return ($user[0]->exists && $this->isUserTokenStillValid($this->currentUser)) ? true : false;
+        return ($user[0]->exists() && !$this->isTokenExpired($this->currentUser)) ? true : false;
     }
 
 
-    private function isUserTokenStillValid($currentUser)
+    private function isTokenExpired($currentUser)
     {
         $date = new DateTime($currentUser->token_expiration);
 
-        return $date->format('Y-m-d') >= date('Y-m-d');
+        return $date->format('Y-m-d') < date('Y-m-d');
     }
 
-    public function currentUser($token)
-    {
-        $isAuth = $this->verify($token);
 
-        if ($isAuth) {
-            return $this->currentUser;
-        }
-    }
-
-    public function retrieveUser($username, $password)
+    public function retrieveUser($username)
     {
         $user = User::where('username', '=', $username)
-            ->where('password', '=', $password)
             ->take(1)
             ->get();
 
         $this->currentUser = $user[0];
-        if ($user[0]->exists) return $user[0];
+        if ($user[0]->exists()) return $user[0];
+    }
+
+    public function remove($id)
+    {
+        $user = User::where('id', '=', $id)->take(1)->get();
+        if ($user[0]->exists()) {
+            return $user->delete();
+        }
+        return $user[0]->exists();
+    }
+
+    public function updateToken($username)
+    {
+        $user = User::where('username', '=', $username)
+            ->take(1)
+            ->get();
+        $user[0]->token = $token = bin2hex(random_bytes(64));
+        $user[0]->token_expiration = date('Y-m-d+23:59:59');
+
+        $user[0]->save();
+    }
+
+    public function isAdmin($username)
+    {
+        $user = User::where('username', '=', $username)
+            ->take(1)
+            ->get();
+
+        return $user[0]->role === 'admin';
     }
 }

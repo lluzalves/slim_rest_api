@@ -5,7 +5,8 @@ include 'bootstrap.php';
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\Middleware\Logger as Logger;
-use App\Middleware\Authentication as Auth;
+use App\Middleware\TokenAuth as TokenAuth;
+use App\Middleware\BasicAuth as BasicAuth;
 
 $app = new \Slim\App([
     'settings' => [
@@ -20,7 +21,16 @@ $app->add(function ($request, $response, $next) {
     return $response;
 });
 
-$app->add(new Auth());
+$request = $app->getContainer()->get('request');
+$requestedUri = $request->getServerParams()['REQUEST_URI'];
+if (strpos($requestedUri, '/slim_app/public/documents') !== false ||
+    strpos($requestedUri, '/slim_app/public/user') !== false) {
+    $app->add(new TokenAuth());
+} else {
+    $app->add(new BasicAuth());
+}
+
+
 $app->add(new Logger());
 
 $container = $app->getContainer();

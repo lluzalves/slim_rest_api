@@ -20,8 +20,8 @@ class PasswordHandler
 
     private function verifyPassword($password, $username)
     {
-        $user = User::user()->retrieveUser($username, $password);
-        return $password === $user->password;
+        $user = User::user()->retrieveUser($username);
+        return password_verify($password, $user->password);
     }
 
 }

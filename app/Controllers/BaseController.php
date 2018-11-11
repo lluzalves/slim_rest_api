@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Middleware\TokenAuth;
 use Interop\Container\ContainerInterface;
-use App\Models\User;
 
 abstract class BaseController
 {
@@ -27,11 +27,11 @@ abstract class BaseController
             ->withHeader('Content-Type', 'application/json');
     }
 
-    protected function getCurrentUser($request)
+    protected function currentUser($request)
     {
         $header = $request->getHeader('Authorization')[0];
         $token = substr($header, strpos($header, '') + 7);
-        return User::user()->currentUser($token);
+        return TokenAuth::authentication()->getAuth($token);
     }
 
 }
