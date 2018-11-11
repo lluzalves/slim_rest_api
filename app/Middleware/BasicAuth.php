@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Daniel
- * Date: 11/11/2018
- * Time: 13:51
- */
 
 namespace App\Middleware;
 use App\Handlers\PasswordHandler;

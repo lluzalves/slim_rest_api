@@ -12,7 +12,7 @@ $app->group('/user', function () {
     $this->get('/{username}',UserController::class . ':retrieve');
     $this->post('', UserController::class . ':create');
     $this->delete('/{id}',UserController::class  . ':delete');
-    $this->put('/{id}',UserController::class . ':update');
+    $this->put('/{username}',UserController::class . ':updateInfo');
 });
 
 $app->group('/documents', function () {

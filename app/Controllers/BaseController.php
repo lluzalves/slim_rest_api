@@ -20,9 +20,9 @@ abstract class BaseController
         $this->container = $container;
     }
 
-    protected function response($response, $status, $code)
+    protected function response($response, $message, $code)
     {
-        return $response->withJson(["status" => $status,
+        return $response->withJson(["message" => $message,
             "code" => $code])
             ->withHeader('Content-Type', 'application/json');
     }
@@ -32,6 +32,12 @@ abstract class BaseController
         $header = $request->getHeader('Authorization')[0];
         $token = substr($header, strpos($header, '') + 7);
         return TokenAuth::authentication()->getAuth($token);
+    }
+
+    public function getUserToken($request)
+    {
+        $auth = $request->getHeader('Authorization');
+        return substr($auth[0], strpos($auth[0], '') + 7);
     }
 
 }

@@ -7,20 +7,11 @@ use App\Models\User;
 class UserController extends BaseController
 {
 
-    public function create($request, $response)
+    public function create($request, $response, $args)
     {
-
-        $user = new User();
-        $user->username = $request->getParsedBodyParam('username', '');
-        $user->email = $request->getParsedBodyParam('email', '');
-        $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
-        $user->token = $token = bin2hex(random_bytes(64));
-        $user->token_expiration = date('Y-m-d');
-        $user->role =
-            $user->save();
-
-        if ($user->id) {
-            return $response->withStatus(200)->withJson('User created, successfully');
+        $user = User::user()->create($request);
+        if (!empty($user)) {
+            return $response->withStatus(200)->withJson($user->tokenOutput());
         } else {
             return $response->withStatus(400)->withJson('Failed, please try again');
         }
@@ -28,44 +19,44 @@ class UserController extends BaseController
 
     public function delete($request, $response, $args)
     {
-
-        if (User::user()->remove($args['id'])) {
-            return $this->response($response, 'Deleted successfully', 204);
+        if (!empty($args['id'])) {
+            if (User::user()->remove($args['id'])) {
+                return $this->response($response, 'Deleted successfully', 204);
+            } else {
+                return $this->response($response, 'Unable to complete request', 400);
+            }
+        } else {
+            return $this->response($response, 'Missing parameter [username], try again', 401);
         }
-        return $this->response($response, 'Unable to complete request', 400);
-
     }
 
 
     public function retrieve($request, $response, $args)
     {
-        $user = User::where('token', '=', $args['token'])
-            ->take(1)
-            ->get();
-
-        if ($user[0]->exists()) {
-            $payload = $user[0]->output();
-            return $response->withStatus(200)->withJson($payload);
+        if (!empty($args['username'])) {
+            $user = User::user()->retrieveUser($args['username']);
+            if ($user->exists) {
+                $payload = $user->output();
+                return $response->withStatus(200)->withJson($payload);
+            } else {
+                return $this->response($response, 'Unable to find requested user', 404);
+            }
         } else {
-            return $this->response($response, 'Failed', 401);
+            return $this->response($response, 'Missing parameter [username], try again', 401);
         }
     }
 
-    public function update($request, $response, $args)
+    public function updateInfo($request, $response, $args)
     {
-        $user = User::where('token', '=', $args['token']);
-
-        $user->username = $request->getParsedBodyParam('username', '');
-        $user->email = $request->getParsedBodyParam('email', '');
-        $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
-
-        $user->save();
-
-        if ($user->id) {
-            $payload = $user->output();
-            return $response->withStatus(201)->withJson($payload);
+        if (!empty($args['username'])) {
+            $user = User::user()->updateInfo($args['username'],$request->getParam('username', ''), $request->getParam('email', ''));
+            if (!empty($user)) {
+                return $this->response($response, 'User updated successfully', 200);
+            } else {
+                return $this->response($response, 'Unable to find requested user', 404);
+            }
         } else {
-            return $response->withStatus(400);
+            return $this->response($response, 'Missing parameter [username], try again', 401);
         }
     }
 
