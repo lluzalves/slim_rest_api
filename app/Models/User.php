@@ -47,6 +47,10 @@ class User extends BaseModel
 
         $this->currentUser = $user[0];
 
+        if (empty($this->currentUser)) {
+            return false;
+        }
+
         return ($user[0]->exists() && !$this->isTokenExpired($this->currentUser)) ? true : false;
     }
 
@@ -61,9 +65,7 @@ class User extends BaseModel
 
     public function retrieveUser($username)
     {
-        $user = User::where('username', '=', $username)
-            ->take(1)
-            ->get();
+        $user = User::where('username', '=', $username)->take(1)->get();
 
         $this->currentUser = $user[0];
 
@@ -73,6 +75,7 @@ class User extends BaseModel
     public function remove($id)
     {
         $user = User::where('id', '=', $id)->take(1)->get();
+
         if ($user[0]->exists()) {
             return $user->delete();
         }
@@ -81,9 +84,8 @@ class User extends BaseModel
 
     public function updateToken($username)
     {
-        $user = User::where('username', '=', $username)
-            ->take(1)
-            ->get();
+        $user = User::where('username', '=', $username)->take(1)->get();
+
         $user[0]->token = $token = bin2hex(random_bytes(64));
         $user[0]->token_expiration = date('Y-m-d+23:59:59');
 
@@ -93,20 +95,22 @@ class User extends BaseModel
     public function create($request)
     {
         $user = new User();
+
         $user->username = $request->getParsedBodyParam('username', '');
         $user->email = $request->getParsedBodyParam('email', '');
         $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
         $user->token = $token = bin2hex(random_bytes(64));
         $user->token_expiration = date('Y-m-d+23:59:59');
+
         $user->save();
+
         return $user;
     }
 
     public function updateInfo($username, $newUserName, $newEmail)
     {
-        $user = User::where('username', '=', $username)
-            ->take(1)
-            ->get();
+        $user = User::where('username', '=', $username)->take(1)->get();
+
         if (!empty($user[0])) {
             $user[0]->username = $newUserName;
             $user[0]->email = $newEmail;
@@ -119,18 +123,16 @@ class User extends BaseModel
 
     public function updatePassword($token, $password)
     {
-        $user = User::where('token', '=', $token)
-            ->take(1)
-            ->get();
+        $user = User::where('token', '=', $token)->take(1)->get();
+
         $user->password = password_hash($password, PASSWORD_BCRYPT);
+
         return $user->save();
     }
 
     public function isAdmin($username)
     {
-        $user = User::where('username', '=', $username)
-            ->take(1)
-            ->get();
+        $user = User::where('username', '=', $username)->take(1)->get();
 
         return $user[0]->role === 'admin';
     }
