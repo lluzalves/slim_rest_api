@@ -10,6 +10,7 @@ class Document extends BaseModel
     {
 
         $output = [];
+        $output['id'] = $this->id;
         $output['description'] = $this->description;
         $output['user_id'] = $this->user_id;
         $output['file_url'] = $this->file_url;
