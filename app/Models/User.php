@@ -92,6 +92,11 @@ class User extends BaseModel
         $user[0]->save();
     }
 
+    public function getUser($token)
+    {
+        return User::where('token', '=', $token)->take(1)->get();
+    }
+
     public function create($request)
     {
         $user = new User();

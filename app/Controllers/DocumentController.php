@@ -16,17 +16,21 @@ class DocumentController extends BaseController
     {
         $currentUser = $this->currentUser($request);
 
-        $documents = Document::where('user_id', '=', $currentUser->id)->get();
+        $documents = Document::where('user_id', '=', $currentUser[0]->id)->get();
 
         if (count($documents) <= 0) {
             return $this->response($response, 'No documents available for this user', 204);
         }
 
         foreach ($documents as $_document) {
-            $payload[$_document->id] = $_document->output();
+            $payload[] = $_document->output();
         }
 
-        return $response->withStatus(200)->withJson($payload);
+        return $response->withStatus(200)->withJson([
+            'message' => 'Success',
+            'code' => 204,
+            'documents' => $payload
+        ]);
     }
 
     public function add($request, $response)
@@ -51,8 +55,12 @@ class DocumentController extends BaseController
         $document->save();
 
         if ($document->id) {
-            $payload = $document->output();
-            return $response->withStatus(200)->withJson($payload);
+            $payload[] = $document->output();
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'documents' => $payload
+            ]);
         } else {
             return $response->withStatus(400);
         }
@@ -79,14 +87,19 @@ class DocumentController extends BaseController
         $document->save();
 
         if ($document->id) {
-            $payload = $document->output();
-            return $response->withStatus(201)->withJson($payload);
+            $payload[] = $document->output();
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'documents' => $payload
+            ]);
         } else {
             return $response->withStatus(400);
         }
     }
 
-    public function validate($request, $response, $args){
+    public function validate($request, $response, $args)
+    {
         $_isvalidated = $request->getParsedBodyParam('is_validated');
 
         $document = Document::where('document_id', '=', $args['document_id'])
@@ -95,8 +108,12 @@ class DocumentController extends BaseController
         $document->save();
 
         if ($document->id) {
-            $payload = $document->output();
-            return $response->withStatus(201)->withJson($payload);
+            $payload[] = $document->output();
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'documents' => $payload
+            ]);
         } else {
             return $response->withStatus(400);
         }

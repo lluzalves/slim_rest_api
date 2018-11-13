@@ -4,7 +4,8 @@
         "slim/twig-view": "^2.4",
         "tuupola/slim-jwt-auth": "^3.1",
         "illuminate/database": "^5.7",
-        "tuupola/slim-basic-auth": "^3.2"
+        "tuupola/slim-basic-auth": "^3.2",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {

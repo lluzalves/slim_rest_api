@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Middleware\TokenAuth;
+use App\Models\User;
 use Interop\Container\ContainerInterface;
 
 abstract class BaseController
@@ -31,7 +32,9 @@ abstract class BaseController
     {
         $header = $request->getHeader('Authorization')[0];
         $token = substr($header, strpos($header, '') + 7);
-        return TokenAuth::authentication()->getAuth($token);
+        if(TokenAuth::authentication()->getAuth($token)){
+            return User::user()->getUser($token);
+        }
     }
 
     public function getUserToken($request)
