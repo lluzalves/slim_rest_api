@@ -63,9 +63,9 @@ class User extends BaseModel
     }
 
 
-    public function retrieveUser($username)
+    public function retrieveUser($email)
     {
-        $user = User::where('username', '=', $username)->take(1)->get();
+        $user = User::where('email', '=', $email)->take(1)->get();
 
         $this->currentUser = $user[0];
 
@@ -82,9 +82,9 @@ class User extends BaseModel
         return $user[0]->exists();
     }
 
-    public function updateToken($username)
+    public function updateToken($email)
     {
-        $user = User::where('username', '=', $username)->take(1)->get();
+        $user = User::where('email', '=', $email)->take(1)->get();
 
         $user[0]->token = $token = bin2hex(random_bytes(64));
         $user[0]->token_expiration = date('Y-m-d+23:59:59');

@@ -26,6 +26,8 @@ $requestedUri = $request->getServerParams()['REQUEST_URI'];
 if (strpos($requestedUri, '/slim_app/public/documents') !== false ||
     strpos($requestedUri, '/slim_app/public/user') !== false) {
     $app->add(new TokenAuth());
+} else if (strpos($requestedUri, '/slim_app/public/register') !== false) {
+
 } else {
     $app->add(new BasicAuth());
 }

@@ -37,12 +37,12 @@ class BasicAuth extends BaseAuth
             return $this->denyAccess($response, 'Missing credentials', 401);
         }
 
-        $username = $request->getServerParams()['PHP_AUTH_USER'];
+        $email = $request->getServerParams()['PHP_AUTH_USER'];
         $password = $request->getServerParams()['PHP_AUTH_PW'];
 
-        if (PasswordHandler::verifyPassword($password, $username)) {
+        if (PasswordHandler::verifyPassword($password, $email)) {
             $response = $next($request, $response);
-            User::updateToken($username);
+            User::updateToken($email);
             return $this->allowAccess($response, 'Authenticated',200);
         } else {
             $response = $next($request, $response);

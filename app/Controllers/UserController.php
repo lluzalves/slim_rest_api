@@ -33,8 +33,8 @@ class UserController extends BaseController
 
     public function retrieve($request, $response, $args)
     {
-        if (!empty($args['username'])) {
-            $user = User::user()->retrieveUser($args['username']);
+        if (!empty($args['email'])) {
+            $user = User::user()->retrieveUser($args['email']);
             if ($user->exists) {
                 $payload = $user->output();
                 return $response->withStatus(200)->withJson($payload);

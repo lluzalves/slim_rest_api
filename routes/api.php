@@ -9,10 +9,13 @@ $app->group('/public', function () {
 });
 
 $app->group('/user', function () {
-    $this->get('/{username}',UserController::class . ':retrieve');
+    $this->get('/{username}', UserController::class . ':retrieve');
+    $this->delete('/{id}', UserController::class . ':delete');
+    $this->put('/{username}', UserController::class . ':updateInfo');
+});
+
+$app->group('/register', function () {
     $this->post('', UserController::class . ':create');
-    $this->delete('/{id}',UserController::class  . ':delete');
-    $this->put('/{username}',UserController::class . ':updateInfo');
 });
 
 $app->group('/documents', function () {

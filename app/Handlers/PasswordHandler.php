@@ -18,9 +18,9 @@ class PasswordHandler
         return password_hash($password, PASSWORD_BCRYPT);
     }
 
-    private function verifyPassword($password, $username)
+    private function verifyPassword($password, $email)
     {
-        $user = User::user()->retrieveUser($username);
+        $user = User::user()->retrieveUser($email);
         return password_verify($password, $user->password);
     }
 
