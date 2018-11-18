@@ -18,7 +18,6 @@ class User extends BaseModel
 
     public function output()
     {
-
         $output = [];
         $output['email'] = $this->email;
         $output['token_expiration'] = $this->token_expiration;
@@ -30,11 +29,25 @@ class User extends BaseModel
         return $output;
     }
 
+
+    public function create($request)
+    {
+        $user = new User();
+
+        $user->name = $request->getParsedBodyParam('name', '');
+        $user->email = $request->getParsedBodyParam('email', '');
+        $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
+        $user->token = $token = bin2hex(random_bytes(64));
+        $user->token_expiration = date('Y-m-d+23:59:59');
+
+        $user->save();
+
+        return $user;
+    }
+
     public function tokenOutput()
     {
-
         $output = [];
-        $output['name'] = $this->name;
         $output['email'] = $this->email;
         $output['token'] = $this->token;
 
@@ -51,7 +64,7 @@ class User extends BaseModel
             return false;
         }
 
-        return ($user[0]->exists() && !$this->isTokenExpired($this->currentUser)) ? true : false;
+        return ($user[0]->exists()) ? true : false;
     }
 
 
@@ -82,34 +95,22 @@ class User extends BaseModel
         return $user[0]->exists();
     }
 
-    public function updateToken($email)
+    public function generateToken($email)
     {
         $user = User::where('email', '=', $email)->take(1)->get();
 
-        $user[0]->token = $token = bin2hex(random_bytes(64));
-        $user[0]->token_expiration = date('Y-m-d+23:59:59');
+        $user[0]->token = bin2hex(random_bytes(64));
 
-        $user[0]->save();
+        if ($user[0]->save()) {
+            return $user[0]->token;
+        }
+
+        return empty(true);
     }
 
     public function getUser($token)
     {
         return User::where('token', '=', $token)->take(1)->get();
-    }
-
-    public function create($request)
-    {
-        $user = new User();
-
-        $user->name = $request->getParsedBodyParam('name', '');
-        $user->email = $request->getParsedBodyParam('email', '');
-        $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
-        $user->token = $token = bin2hex(random_bytes(64));
-        $user->token_expiration = date('Y-m-d+23:59:59');
-
-        $user->save();
-
-        return $user;
     }
 
     public function updateEmail($token, $newEmail)

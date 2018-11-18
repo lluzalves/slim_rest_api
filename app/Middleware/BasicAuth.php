@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Middleware;
+
 use App\Handlers\PasswordHandler;
 use App\Models\User;
 
@@ -26,7 +27,7 @@ class BasicAuth extends BaseAuth
             return $this->login($request, $response, $next);
         }
 
-        return $this->denyAccess($response,'Invalid request',401);
+        return $this->denyAccess($response, 'Invalid request', 401);
 
     }
 
@@ -40,10 +41,15 @@ class BasicAuth extends BaseAuth
         $email = $request->getServerParams()['PHP_AUTH_USER'];
         $password = $request->getServerParams()['PHP_AUTH_PW'];
 
+
         if (PasswordHandler::verifyPassword($password, $email)) {
-            $response = $next($request, $response);
-            User::updateToken($email);
-            return $this->allowAccess($response, 'Authenticated',200);
+            $token = User::generateToken($email);
+             $response = $next($request, $response);
+
+            return $response->withStatus(200)->withJson([
+                'message' => 'Authenticated',
+                'code' => 200,
+                'token' => $token]);
         } else {
             $response = $next($request, $response);
             return $this->denyAccess($response, 'Please, check your credentials', 401);

@@ -4,9 +4,6 @@ use App\Controllers\DocumentController;
 use App\Middleware\FileFilter as Filter;
 use App\Controllers\UserController;
 
-$app->group('/public', function () {
-    $this->get('', HomeController::class . ':login');
-});
 
 $app->group('/user', function () {
     $this->get('/{name}', UserController::class . ':retrieve');
