@@ -9,7 +9,7 @@ class User extends BaseModel
 
     public $timestamps = false;
     protected $currentUser;
-    protected $fillable = ['username', 'password'];
+    protected $fillable = ['name', 'password'];
 
     static function user()
     {
@@ -22,7 +22,7 @@ class User extends BaseModel
         $output = [];
         $output['email'] = $this->email;
         $output['token_expiration'] = $this->token_expiration;
-        $output['username'] = $this->username;
+        $output['name'] = $this->name;
         $output['user_uri'] = '/users/' . $this->id;
         $output['created_at'] = $this->created_at;
         $output['updated_at'] = $this->updated_at;
@@ -34,7 +34,7 @@ class User extends BaseModel
     {
 
         $output = [];
-        $output['username'] = $this->username;
+        $output['name'] = $this->name;
         $output['email'] = $this->email;
         $output['token'] = $this->token;
 
@@ -101,7 +101,7 @@ class User extends BaseModel
     {
         $user = new User();
 
-        $user->username = $request->getParsedBodyParam('username', '');
+        $user->name = $request->getParsedBodyParam('name', '');
         $user->email = $request->getParsedBodyParam('email', '');
         $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
         $user->token = $token = bin2hex(random_bytes(64));
@@ -112,12 +112,11 @@ class User extends BaseModel
         return $user;
     }
 
-    public function updateInfo($username, $newUserName, $newEmail)
+    public function updateEmail($token, $newEmail)
     {
-        $user = User::where('username', '=', $username)->take(1)->get();
+        $user = User::where('token', '=', $token)->take(1)->get();
 
         if (!empty($user[0])) {
-            $user[0]->username = $newUserName;
             $user[0]->email = $newEmail;
             return $user[0]->save();
         } else {
@@ -135,9 +134,9 @@ class User extends BaseModel
         return $user->save();
     }
 
-    public function isAdmin($username)
+    public function isAdmin($email)
     {
-        $user = User::where('username', '=', $username)->take(1)->get();
+        $user = User::where('email', '=', $email)->take(1)->get();
 
         return $user[0]->role === 'admin';
     }

@@ -11,7 +11,9 @@ class UserController extends BaseController
     {
         $user = User::user()->create($request);
         if (!empty($user)) {
-            return $response->withStatus(200)->withJson($user->tokenOutput());
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 200]);
         } else {
             return $response->withStatus(400)->withJson('Failed, please try again');
         }
@@ -26,7 +28,7 @@ class UserController extends BaseController
                 return $this->response($response, 'Unable to complete request', 400);
             }
         } else {
-            return $this->response($response, 'Missing parameter [username], try again', 401);
+            return $this->response($response, 'Missing parameter [name], try again', 401);
         }
     }
 
@@ -42,21 +44,21 @@ class UserController extends BaseController
                 return $this->response($response, 'Unable to find requested user', 404);
             }
         } else {
-            return $this->response($response, 'Missing parameter [username], try again', 401);
+            return $this->response($response, 'Missing parameter [name], try again', 401);
         }
     }
 
     public function updateInfo($request, $response, $args)
     {
-        if (!empty($args['username'])) {
-            $user = User::user()->updateInfo($args['username'],$request->getParam('username', ''), $request->getParam('email', ''));
+        if (!empty($args['email'])) {
+            $user = User::user()->updateEmail($this->getUserToken($request), $request->getParam('email', ''));
             if (!empty($user)) {
                 return $this->response($response, 'User updated successfully', 200);
             } else {
                 return $this->response($response, 'Unable to find requested user', 404);
             }
         } else {
-            return $this->response($response, 'Missing parameter [username], try again', 401);
+            return $this->response($response, 'Missing parameter [name], try again', 401);
         }
     }
 

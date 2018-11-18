@@ -9,9 +9,9 @@ $app->group('/public', function () {
 });
 
 $app->group('/user', function () {
-    $this->get('/{username}', UserController::class . ':retrieve');
+    $this->get('/{name}', UserController::class . ':retrieve');
     $this->delete('/{id}', UserController::class . ':delete');
-    $this->put('/{username}', UserController::class . ':updateInfo');
+    $this->put('/{name}', UserController::class . ':updateInfo');
 });
 
 $app->group('/register', function () {
