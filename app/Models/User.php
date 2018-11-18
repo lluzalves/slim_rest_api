@@ -23,8 +23,8 @@ class User extends BaseModel
         $output['token_expiration'] = $this->token_expiration;
         $output['name'] = $this->name;
         $output['user_uri'] = '/users/' . $this->id;
-        $output['created_at'] = $this->created_at;
-        $output['updated_at'] = $this->updated_at;
+        $output['created_at'] = $this->created_at->toDateTimeString();;
+        $output['updated_at'] = $this->updated_at->toDateTimeString();;
 
         return $output;
     }
