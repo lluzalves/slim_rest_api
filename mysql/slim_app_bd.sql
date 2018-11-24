@@ -27,19 +27,21 @@ use slim_app;
   `created_at` datetime not null,
   `updated_at` datetime not null,
   `notification` char(5),
+  `is_validated` tinyint(1) not null,
+  `type` varchar(100) not null,
    primary key (id),
    foreign key (user_id) references users(id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- insert data
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('1', 'danielluz', 'danielluz.alves@outlook.com', '123456', 'daniel.jpg', 'qwert12345','user', '2018-11-10 00:00:00');
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('2', 'maria', 'maria@outlook.com', '123456', 'maria.jpg', 'qwert123456','user', '2018-10-10 00:00:00');
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('3', 'jose', 'jose@outlook.com', '123456', 'jose.jpg', 'qwert123457','user', '2018-21-10 00:00:00');
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('4', 'ana', 'ana@outlook.com', '123456', 'ana.jpg', 'qwert123458', 'user', '2017-11-10 00:00:00');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`, `is_validated`, `type`)
+VALUES ('1', 'danielluz', 'danielluz.alves@outlook.com', '123456', 'daniel.jpg', 'qwert12345','user', '2018-11-10 00:00:00',0,cpf);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`, `is_validated`, `type`)
+VALUES ('2', 'maria', 'maria@outlook.com', '123456', 'maria.jpg', 'qwert123456','user', '2018-10-10 00:00:00',0,outros);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`, `is_validated`, `type`)
+VALUES ('3', 'jose', 'jose@outlook.com', '123456', 'jose.jpg', 'qwert123457','user', '2018-21-10 00:00:00',0,outros);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`, `is_validated`, `type`)
+VALUES ('4', 'ana', 'ana@outlook.com', '123456', 'ana.jpg', 'qwert123458', 'user', '2017-11-10 00:00:00',0,outros);
 
 INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`)
 VALUES ('1', 'Cpf', '1', 'cpf.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00');

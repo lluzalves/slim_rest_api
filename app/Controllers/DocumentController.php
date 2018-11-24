@@ -37,10 +37,13 @@ class DocumentController extends BaseController
     {
 
         $currentUser = $this->currentUser($request);
+        $type = $request->getParsedBodyParam('type', '');
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type;
+        if (!is_dir($directory)) {
+            mkdir($directory, 0700, true);
+        }
 
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw';
         $uploadedFiles = $request->getUploadedFiles();
-
         $uploadedFile = $uploadedFiles['file'];
         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($directory, $uploadedFile);
@@ -49,8 +52,9 @@ class DocumentController extends BaseController
 
         $document = new Document();
         $document->description = $request->getParsedBodyParam('description', '');
-        $document->user_id = $currentUser->id;
+        $document->user_id = $currentUser[0]->id;
         $document->is_validated = false;
+        $document->type = $type;
         $document->file_url = $directory . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
@@ -104,6 +108,8 @@ class DocumentController extends BaseController
 
         $document = Document::where('document_id', '=', $args['document_id'])
             ->where('user_id', '=', $this->getCurrentUserId($request)->id);
+
+        $document->isvalidated = $_isvalidated;
 
         $document->save();
 
