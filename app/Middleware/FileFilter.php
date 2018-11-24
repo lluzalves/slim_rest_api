@@ -13,8 +13,6 @@ class FileFilter
     {
         $uploadedFiles = $request->getUploadedFiles();
         $newFile = $uploadedFiles['file'];
-        var_dump($newFile);
-        exit();
         $newFileType = $newFile->getClientMediaType();
         if (!in_array($newFileType, $this->allowedFiles)) {
             return $response->withStatus(415)->withJson([
