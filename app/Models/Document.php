@@ -17,6 +17,7 @@ class Document extends BaseModel
         $output['document_uri'] = '/document/' . $this->id;
         $output['is_validated'] = $this->is_validated;
         $output['notification'] = $this->notification;
+        $output['type'] = $this->type;
         $output['created_at'] = $this->created_at->toDateTimeString();;
         $output['updated_at'] = $this->updated_at->toDateTimeString();;
 
