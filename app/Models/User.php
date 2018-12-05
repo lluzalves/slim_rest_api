@@ -110,7 +110,7 @@ class User extends BaseModel
 
     public function getUser($token)
     {
-        return User::where('token', '=', $token)->take(1)->get();
+          return User::where('token', '=', $token)->take(1)->get();
     }
 
     public function updateEmail($token, $newEmail)

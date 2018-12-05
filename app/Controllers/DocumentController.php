@@ -35,7 +35,6 @@ class DocumentController extends BaseController
 
     public function add($request, $response)
     {
-
         $currentUser = $this->currentUser($request);
         $type = $request->getParsedBodyParam('type', '');
         $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type;
@@ -72,9 +71,14 @@ class DocumentController extends BaseController
 
     public function delete($request, $response, $args)
     {
-        $document = Document::where('document_id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->getCurrentUserId($request)->id);
-        $document->delete();
+        $document = Document::where('id', '=', $args['document_id'])
+            ->where('user_id', '=', $this->currentUser($request)[0]->id);
+
+        if ($document->status == 1) {
+            return $this->response($response, 'Unable to complete request, document is already validated', 401);
+        } else {
+            $document->delete();
+        }
 
         if ($document->exists) {
             return $this->response($response, 'Unable to complete request', 400);
@@ -85,8 +89,8 @@ class DocumentController extends BaseController
 
     public function update($request, $response, $args)
     {
-        $document = Document::where('document_id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->getCurrentUserId($request)->id);
+        $document = Document::where('id', '=', $args['document_id'])
+            ->where('user_id', '=', $this->currentUser($request)[0]->id);
 
         $document->save();
 
@@ -106,8 +110,8 @@ class DocumentController extends BaseController
     {
         $_isvalidated = $request->getParsedBodyParam('is_validated');
 
-        $document = Document::where('document_id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->getCurrentUserId($request)->id);
+        $document = Document::where('id', '=', $args['document_id'])
+            ->where('user_id', '=', $this->currentUser($request)[0]->id);
 
         $document->isvalidated = $_isvalidated;
 
@@ -127,13 +131,13 @@ class DocumentController extends BaseController
 
     public function deleteAll($request, $response, $args)
     {
-        $documents = Document::where('user_id', '=', $this->currentUser($request)->id);
+        $documents = Document::where('user_id', '=', $this->currentUser($request)[0]->id);
 
         foreach ($documents as $_document) {
             $_document->delete();
         }
 
-        $documents = Document::where('user_id', '=', $this->currentUser($request)->id);
+        $documents = Document::where('user_id', '=', $this->currentUser($request)[0]->id);
 
         if ($documents->isEmpty()) {
             return $this->response($response, 'All documents have been deleted successfully', 400);
