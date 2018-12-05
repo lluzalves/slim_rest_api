@@ -72,25 +72,27 @@ class DocumentController extends BaseController
     public function delete($request, $response, $args)
     {
         $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id);
-
-        if ($document->status == 1) {
-            return $this->response($response, 'Unable to complete request, document is already validated', 401);
+            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        if ($document[0]->exists) {
+            if ($document[0]->is_validated == 1) {
+                return $this->response($response, 'Unable to complete request, document is already validated', 401);
+            } else {
+                $document[0]->delete();
+                if (!$document[0]->exists) {
+                    return $this->response($response, 'Deleted successfully', 204);
+                }
+            }
         } else {
-            $document->delete();
-        }
-
-        if ($document->exists) {
-            return $this->response($response, 'Unable to complete request', 400);
-        } else {
-            return $this->response($response, 'Deleted successfully', 204);
+            return $this->response($response, 'Unable to complete request', 401);
         }
     }
 
-    public function update($request, $response, $args)
+
+    public
+    function update($request, $response, $args)
     {
         $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id);
+            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
 
         $document->save();
 
@@ -106,7 +108,8 @@ class DocumentController extends BaseController
         }
     }
 
-    public function validate($request, $response, $args)
+    public
+    function validate($request, $response, $args)
     {
         $_isvalidated = $request->getParsedBodyParam('is_validated');
 
@@ -129,7 +132,8 @@ class DocumentController extends BaseController
         }
     }
 
-    public function deleteAll($request, $response, $args)
+    public
+    function deleteAll($request, $response, $args)
     {
         $documents = Document::where('user_id', '=', $this->currentUser($request)[0]->id);
 
@@ -146,7 +150,8 @@ class DocumentController extends BaseController
         }
     }
 
-    public function moveUploadedFile($directory, UploadedFile $uploadedFile)
+    public
+    function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
         $basename = bin2hex(random_bytes(8));

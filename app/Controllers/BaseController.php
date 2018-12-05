@@ -32,7 +32,7 @@ abstract class BaseController
     {
         $header = $request->getHeader('Authorization')[0];
         $token = substr($header, strpos($header, '') + 7);
-        if(TokenAuth::authentication()->getAuth($token)){
+        if (TokenAuth::authentication()->getAuth($token)) {
             return User::user()->getUser($token);
         }
     }
