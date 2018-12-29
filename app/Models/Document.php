@@ -24,4 +24,11 @@ class Document extends BaseModel
         return $output;
     }
 
+    public function retrieveDocument($document_id)
+    {
+        $document = Document::where('id', '=', $document_id)->take(1)->get();
+
+        return $this->$document[0];
+    }
+
 }

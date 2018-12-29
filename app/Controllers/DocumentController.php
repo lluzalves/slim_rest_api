@@ -33,6 +33,22 @@ class DocumentController extends BaseController
         ]);
     }
 
+    public function getDocument($request, $response, $args)
+    {
+        $document = Document::where('id', '=', $args['document_id'])
+            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        if ($document[0]->exists) {
+            $payload[] = $document[0]->output();
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'documents' => $payload
+            ]);
+        } else {
+            return $response->withStatus(400);
+        }
+    }
+
     public function add($request, $response)
     {
         $currentUser = $this->currentUser($request);
