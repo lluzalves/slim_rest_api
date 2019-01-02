@@ -39,11 +39,25 @@ class DocumentController extends BaseController
             ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
         if ($document[0]->exists) {
             $payload[] = $document[0]->output();
-            return $response->withStatus(200)->withJson([
-                'message' => 'Success',
-                'code' => 204,
-                'documents' => $payload
-            ]);
+            $file = $document[0]->file_url;
+            $openFile = fopen($file, 'rb');
+            $stream = new \Slim\Http\Stream($openFile);
+            return $response->withStatus(200)
+                ->withHeader('Content-Type', 'application/force-download')
+                ->withHeader('Content-Type', 'application/octet-stream')
+                ->withHeader('Content-Type', 'application/download')
+                ->withHeader('Content-Description', 'File Transfer')
+                ->withHeader('Content-Transfer-Encoding', 'binary')
+                ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
+                ->withHeader('Expires', '0')
+                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Pragma', 'public')
+                ->withBody($stream)
+                ->withJson([
+                    'message' => 'Success',
+                    'code' => 204,
+                    'documents' => $payload
+                ]);
         } else {
             return $response->withStatus(400);
         }
@@ -70,7 +84,7 @@ class DocumentController extends BaseController
         $document->user_id = $currentUser[0]->id;
         $document->is_validated = false;
         $document->type = $type;
-        $document->file_url = $directory . DIRECTORY_SEPARATOR . $filename;
+        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
         if ($document->id) {
