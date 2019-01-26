@@ -63,29 +63,40 @@ class DocumentController extends BaseController
         }
     }
 
-    public function add($request, $response)
+    public function upsert($request, $response)
     {
         $currentUser = $this->currentUser($request);
         $type = $request->getParsedBodyParam('type', '');
         $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type;
+
         if (!is_dir($directory)) {
             mkdir($directory, 0700, true);
         }
 
         $uploadedFiles = $request->getUploadedFiles();
         $uploadedFile = $uploadedFiles['file'];
+
         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($directory, $uploadedFile);
             $response->write('uploaded ' . $filename . '<br/>');
         }
 
-        $document = new Document();
+        $id = $request->getParsedBodyParam('id', '');
+
+        if (!empty($id)) {
+            $documents = Document::where('id', '=', $id)
+                ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+            $document = $documents[0];
+        } else {
+            $document = new Document();
+        }
+
         $document->description = $request->getParsedBodyParam('description', '');
         $document->user_id = $currentUser[0]->id;
         $document->is_validated = false;
         $document->type = $type;
         $document->notification = 'Pendente';
-        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
+        $document->file_url = 'G:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
         if ($document->id) {
@@ -119,28 +130,7 @@ class DocumentController extends BaseController
     }
 
 
-    public
-    function update($request, $response, $args)
-    {
-        $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
-
-        $document->save();
-
-        if ($document->id) {
-            $payload[] = $document->output();
-            return $response->withStatus(200)->withJson([
-                'message' => 'Success',
-                'code' => 204,
-                'documents' => $payload
-            ]);
-        } else {
-            return $response->withStatus(400);
-        }
-    }
-
-    public
-    function validate($request, $response, $args)
+    public function validate($request, $response, $args)
     {
         $_isvalidated = $request->getParsedBodyParam('is_validated');
 

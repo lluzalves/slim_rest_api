@@ -13,7 +13,6 @@ class Document extends BaseModel
         $output['id'] = $this->id;
         $output['description'] = $this->description;
         $output['user_id'] = $this->user_id;
-        $output['file_url'] = $this->file_url;
         $output['document_uri'] = '/document/' . $this->id;
         $output['is_validated'] = $this->is_validated;
         $output['notification'] = $this->notification;
