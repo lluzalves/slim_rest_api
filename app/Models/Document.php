@@ -23,6 +23,17 @@ class Document extends BaseModel
         return $output;
     }
 
+    public function fileOutput()
+    {
+
+        $output = [];
+        $output['id'] = $this->id;
+        $output['user_id'] = $this->user_id;
+        $output['file_url'] = $this->file_url;
+
+        return $output;
+    }
+
     public function retrieveDocument($document_id)
     {
         $document = Document::where('id', '=', $document_id)->take(1)->get();

@@ -18,6 +18,7 @@ $app->group('/register', function () {
 $app->group('/documents', function () {
     $this->get('', DocumentController::class . ':all');
     $this->get('/{document_id}', DocumentController::class . ':getDocument');
+    $this->get('/{document_id}/attachment', DocumentController::class . ':getDocumentAttachment');
     $this->post('', DocumentController::class . ':upsert')->add(new Filter());
     $this->delete('/{document_id}', DocumentController::class . ':delete');
     $this->put('/{document_id}', DocumentController::class . ':update');

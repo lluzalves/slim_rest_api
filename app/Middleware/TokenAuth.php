@@ -58,7 +58,7 @@ class TokenAuth extends BaseAuth
 
     public function getUserToken($header)
     {
-        return substr($header, strpos($header, '') + 7);
+        return substr($header, strpos($header, "") + 7);
     }
 
 }

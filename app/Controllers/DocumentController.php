@@ -35,24 +35,12 @@ class DocumentController extends BaseController
 
     public function getDocument($request, $response, $args)
     {
+        error_reporting(E_ERROR | E_PARSE);
         $document = Document::where('id', '=', $args['document_id'])
             ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
         if ($document[0]->exists) {
             $payload[] = $document[0]->output();
-            $file = $document[0]->file_url;
-            $openFile = fopen($file, 'rb');
-            $stream = new \Slim\Http\Stream($openFile);
             return $response->withStatus(200)
-                ->withHeader('Content-Type', 'application/force-download')
-                ->withHeader('Content-Type', 'application/octet-stream')
-                ->withHeader('Content-Type', 'application/download')
-                ->withHeader('Content-Description', 'File Transfer')
-                ->withHeader('Content-Transfer-Encoding', 'binary')
-                ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
-                ->withHeader('Expires', '0')
-                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
-                ->withHeader('Pragma', 'public')
-                ->withBody($stream)
                 ->withJson([
                     'message' => 'Success',
                     'code' => 204,
@@ -171,8 +159,7 @@ class DocumentController extends BaseController
         }
     }
 
-    public
-    function moveUploadedFile($directory, UploadedFile $uploadedFile)
+    public function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
         $basename = bin2hex(random_bytes(8));
@@ -181,6 +168,38 @@ class DocumentController extends BaseController
         $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
         return $filename;
+    }
+
+
+    public function getDocumentAttachment($request, $response, $args)
+    {
+        error_reporting(E_ERROR | E_PARSE);
+        $document = Document::where('id', '=', $args['document_id'])
+            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        if ($document[0]->exists) {
+            $payload[] = $document[0]->fileOutput();
+            $file = $document[0]->file_url;
+            $openFile = fopen($file, 'rb');
+            $stream = new \Slim\Http\Stream($openFile);
+            return $response->withStatus(200)
+                ->withHeader('Content-Type', 'application/force-download')
+                ->withHeader('Content-Type', 'application/octet-stream')
+                ->withHeader('Content-Type', 'application/download')
+                ->withHeader('Content-Description', 'File Transfer')
+                ->withHeader('Content-Transfer-Encoding', 'binary')
+                ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
+                ->withHeader('Expires', '0')
+                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Pragma', 'public')
+                ->withBody($stream)
+                ->withJson([
+                    'message' => 'Success',
+                    'code' => 204,
+                    'documents' => $payload
+                ]);
+        } else {
+            return $response->withStatus(400);
+        }
     }
 
 }
