@@ -3,6 +3,7 @@
 use App\Controllers\DocumentController;
 use App\Middleware\FileFilter as Filter;
 use App\Controllers\UserController;
+use App\Middleware\BasicAuth;
 
 
 $app->group('/user', function () {
@@ -13,6 +14,10 @@ $app->group('/user', function () {
 
 $app->group('/register', function () {
     $this->post('', UserController::class . ':create');
+});
+
+$app->group('/login', function () {
+    $this->post('', BasicAuth::class . ':create');
 });
 
 $app->group('/documents', function () {

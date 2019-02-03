@@ -40,6 +40,9 @@ class User extends BaseModel
         $user->token = $token = bin2hex(random_bytes(64));
         $user->token_expiration = date('Y-m-d+23:59:59');
 
+        if (empty($user->name) or empty($user->email) or empty($user->password)) {
+            return null;
+        }
         $user->save();
 
         return $user;
@@ -110,7 +113,7 @@ class User extends BaseModel
 
     public function getUser($token)
     {
-          return User::where('token', '=', $token)->take(1)->get();
+        return User::where('token', '=', $token)->take(1)->get();
     }
 
     public function updateEmail($token, $newEmail)

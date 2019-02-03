@@ -3,14 +3,19 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 
 class UserController extends BaseController
 {
 
     public function create($request, $response, $args)
     {
-        $user = User::user()->create($request);
-        if (!empty($user)) {
+        try {
+            $user = User::user()->create($request);
+        } catch (QueryException $query_exception) {
+            return $response->withStatus(409)->withJson($query_exception->getMessage());
+        }
+        if (!is_null($user)) {
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
                 'code' => 200]);
