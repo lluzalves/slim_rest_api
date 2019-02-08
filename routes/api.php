@@ -7,9 +7,9 @@ use App\Middleware\BasicAuth;
 
 
 $app->group('/user', function () {
-    $this->get('/{name}', UserController::class . ':retrieve');
+    $this->get('/{email}', UserController::class . ':retrieve');
     $this->delete('/{id}', UserController::class . ':delete');
-    $this->put('/{name}', UserController::class . ':updateInfo');
+    $this->put('/{email}', UserController::class . ':updateInfo');
 });
 
 $app->group('/register', function () {
@@ -18,6 +18,7 @@ $app->group('/register', function () {
 
 $app->group('/login', function () {
     $this->post('', BasicAuth::class . ':create');
+    $this->post('/recover', BasicAuth::class . 'recover');
 });
 
 $app->group('/documents', function () {

@@ -21,4 +21,8 @@ abstract class BaseAuth
             ->withHeader('Content-Type', 'application/json');
     }
 
+    public function requestChangePassword($response, $message, $status){
+
+    }
+
 }

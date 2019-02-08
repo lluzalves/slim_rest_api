@@ -25,7 +25,6 @@ class Document extends BaseModel
 
     public function fileOutput()
     {
-
         $output = [];
         $output['id'] = $this->id;
         $output['user_id'] = $this->user_id;

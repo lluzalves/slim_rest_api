@@ -36,6 +36,7 @@ class User extends BaseModel
 
         $user->name = $request->getParsedBodyParam('name', '');
         $user->email = $request->getParsedBodyParam('email', '');
+        $user->role = $request->getParsedBodyParam('role' . '');
         $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
         $user->token = $token = bin2hex(random_bytes(64));
         $user->token_expiration = date('Y-m-d+23:59:59');
@@ -129,13 +130,20 @@ class User extends BaseModel
 
     }
 
-    public function updatePassword($token, $password)
+    public function updateToken($token, $password)
     {
         $user = User::where('token', '=', $token)->take(1)->get();
 
         $user->password = password_hash($password, PASSWORD_BCRYPT);
 
         return $user->save();
+    }
+
+    public function updatePassword($email, $password)
+    {
+        $user = User::user()->retrieveUser($email);
+        $user->password = $password;
+        $user->save();
     }
 
     public function isAdmin($email)

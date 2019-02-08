@@ -33,25 +33,12 @@ use slim_app;
    foreign key (user_id) references users(id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;
 
--- insert data
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('1', 'danielluz', 'danielluz.alves@outlook.com', '123456', 'daniel.jpg', 'qwert12345','user', '2018-11-10 00:00:00');
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('2', 'maria', 'maria@outlook.com', '123456', 'maria.jpg', 'qwert123456','user', '2018-10-10 00:00:00');
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('3', 'jose', 'jose@outlook.com', '123456', 'jose.jpg', 'qwert123457','user', '2018-21-10 00:00:00');
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `profile_icon`, `token`,  `role` ,`token_expiration`)
-VALUES ('4', 'ana', 'ana@outlook.com', '123456', 'ana.jpg', 'qwert123458', 'user', '2017-11-10 00:00:00');
+-- create periodic table
+   create table if not exists `slim_app`.`periodicurl`(
+  `id` int auto_increment not null,
+  `url_token` DATETIME not null,
+  `user_email`  varchar(100) not null,
+   primary key (id),
+   foreign key (user_email) references users(email))
+   CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`, `notification`, `is_validated`,`type`)
-VALUES ('1', 'Cpf', '1', 'cpf.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00',null,0,'outros');
-INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`, `notification`, `is_validated`,`type`)
-VALUES ('2', 'Rg', '1', 'rg.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00',null,0,'outros');
-INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`, `notification`, `is_validated`,`type`)
-VALUES ('3', 'Comprovante Residencial', '2', 'residencial.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00',null,0,'outros');
-INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`,`notification`, `is_validated`,`type`)
-VALUES ('4', 'Cateira de Trabalho', '2', 'carteira.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00',null,0,'outros');
-INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`,`notification`, `is_validated`,`type`)
-VALUES ('5', 'Cpf', '3', 'cpf.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00',null,0,'outros');
-INSERT INTO `documents` (`id`, `description`, `user_id`, `file_url`, `created_at`, `updated_at`, `notification`, `is_validated`, `type`)
-VALUES ('6', 'Rg', '3', 'rg.jpg', '2018-11-09 00:00:00', '2018-11-10 00:00:00',null,0,'outros');

@@ -56,4 +56,8 @@ class BasicAuth extends BaseAuth
         }
     }
 
+    public function recover($request, $response, $next){
+
+    }
+
 }
