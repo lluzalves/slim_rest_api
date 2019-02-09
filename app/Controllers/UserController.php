@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Handlers\PasswordHandler;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 
@@ -57,6 +58,19 @@ class UserController extends BaseController
     {
         if (!empty($args['email'])) {
             $user = User::user()->updateEmail($this->getUserToken($request), $request->getParam('email', ''));
+            if (!empty($user)) {
+                return $this->response($response, 'User updated successfully', 200);
+            } else {
+                return $this->response($response, 'Unable to find requested user', 404);
+            }
+        } else {
+            return $this->response($response, 'Missing parameter [name], try again', 401);
+        }
+    }
+
+    public function recover($request, $response, $next){
+        if (!empty($args['email'])) {
+            $user = PasswordHandler::recover()->updateEmail($this->getUserToken($request), $request->getParam('email', ''));
             if (!empty($user)) {
                 return $this->response($response, 'User updated successfully', 200);
             } else {

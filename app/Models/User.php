@@ -139,7 +139,7 @@ class User extends BaseModel
         return $user->save();
     }
 
-    public function updatePassword($email, $password)
+    public function updatePassword($email)
     {
         $user = User::user()->retrieveUser($email);
         $user->password = $password;

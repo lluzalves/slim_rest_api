@@ -11,6 +11,7 @@ use slim_app;
   `email` varchar(100) not null,
   `password` varchar(255) not null,
   `profile_icon` varchar(255) not null,
+  `prontuario` int (6) not null,
   `token` varchar(255) null,
   `role` char(16) null,
   `token_expiration` DATETIME not null,

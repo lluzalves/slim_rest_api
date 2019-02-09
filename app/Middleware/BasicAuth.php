@@ -44,20 +44,18 @@ class BasicAuth extends BaseAuth
 
         if (PasswordHandler::verifyPassword($password, $email)) {
             $token = User::generateToken($email);
-             $response = $next($request, $response);
+            $currentUser = User::getUser($token);
+            $response = $next($request, $response);
 
             return $response->withStatus(200)->withJson([
                 'message' => 'Authenticated',
                 'code' => 200,
+                'role' => $currentUser[0]->role,
                 'token' => $token]);
         } else {
             $response = $next($request, $response);
             return $this->denyAccess($response, 'Please, check your credentials', 401);
         }
-    }
-
-    public function recover($request, $response, $next){
-
     }
 
 }
