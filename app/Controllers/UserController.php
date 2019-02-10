@@ -45,7 +45,11 @@ class UserController extends BaseController
             $user = User::user()->retrieveUser($args['email']);
             if ($user->exists) {
                 $payload = $user->output();
-                return $response->withStatus(200)->withJson($payload);
+                return $response->withStatus(200)->withJson([
+                    'message' => 'Success',
+                    'code' => 200,
+                    'user' => $payload
+                ]);
             } else {
                 return $this->response($response, 'Unable to find requested user', 404);
             }
@@ -68,7 +72,8 @@ class UserController extends BaseController
         }
     }
 
-    public function recover($request, $response, $next){
+    public function recover($request, $response, $next)
+    {
         if (!empty($args['email'])) {
             $user = PasswordHandler::recover()->updateEmail($this->getUserToken($request), $request->getParam('email', ''));
             if (!empty($user)) {

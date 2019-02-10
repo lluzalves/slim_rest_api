@@ -47,5 +47,6 @@ $container ['view'] = function ($container) {
 
     return $view;
 };
+
 require __DIR__ . '/../routes/api.php';
 

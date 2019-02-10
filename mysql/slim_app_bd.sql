@@ -15,6 +15,8 @@ use slim_app;
   `token` varchar(255) null,
   `role` char(16) null,
   `token_expiration` DATETIME not null,
+  `created_at` datetime not null,
+  `updated_at` datetime not null,
    unique(email),
    primary key (id))
    CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -39,6 +41,8 @@ use slim_app;
   `id` int auto_increment not null,
   `url_token` DATETIME not null,
   `user_email`  varchar(100) not null,
+  `created_at` datetime not null,
+  `updated_at` datetime not null,
    primary key (id),
    foreign key (user_email) references users(email))
    CHARACTER SET utf8 COLLATE utf8_general_ci;

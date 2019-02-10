@@ -7,7 +7,7 @@ use DateTime;
 class User extends BaseModel
 {
 
-    public $timestamps = false;
+    public $timestamps = true;
     protected $currentUser;
     protected $fillable = ['name', 'password'];
 
@@ -19,6 +19,7 @@ class User extends BaseModel
     public function output()
     {
         $output = [];
+        $output['id']= $this->id;
         $output['email'] = $this->email;
         $output['token_expiration'] = $this->token_expiration;
         $output['name'] = $this->name;
