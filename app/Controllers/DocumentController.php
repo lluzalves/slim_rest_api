@@ -55,7 +55,7 @@ class DocumentController extends BaseController
     {
         $currentUser = $this->currentUser($request);
         $type = $request->getParsedBodyParam('type', '');
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type;
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->prontuario . DIRECTORY_SEPARATOR . $type;
 
         if (!is_dir($directory)) {
             mkdir($directory, 0700, true);
@@ -84,7 +84,7 @@ class DocumentController extends BaseController
         $document->is_validated = false;
         $document->type = $type;
         $document->notification = 'Pendente';
-        $document->file_url = 'G:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser[0]->id . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
+        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser[0]->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
         if ($document->id) {

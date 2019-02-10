@@ -29,7 +29,7 @@ use slim_app;
   `file_url` varchar(255) not null,
   `created_at` datetime not null,
   `updated_at` datetime not null,
-  `notification` char(5) not null,
+  `notification` char(20) not null,
   `is_validated` tinyint(1) not null,
   `type` varchar(100) not null,
    primary key (id),

@@ -23,6 +23,7 @@ class User extends BaseModel
         $output['email'] = $this->email;
         $output['token_expiration'] = $this->token_expiration;
         $output['name'] = $this->name;
+        $output['prontuario'] = $this->prontuario;
         $output['user_uri'] = '/users/' . $this->id;
         $output['created_at'] = $this->created_at->toDateTimeString();;
         $output['updated_at'] = $this->updated_at->toDateTimeString();;
@@ -38,6 +39,7 @@ class User extends BaseModel
         $user->name = $request->getParsedBodyParam('name', '');
         $user->email = $request->getParsedBodyParam('email', '');
         $user->role = $request->getParsedBodyParam('role' . '');
+        $user->prontuario = $request->getParsedBodyParam('prontuario','');
         $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
         $user->token = $token = bin2hex(random_bytes(64));
         $user->token_expiration = date('Y-m-d+23:59:59');
