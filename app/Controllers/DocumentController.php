@@ -33,6 +33,29 @@ class DocumentController extends BaseController
         ]);
     }
 
+    public function allUsersDocuments($request, $response)
+    {
+        $currentUser = $this->currentUser($request);
+
+        if ($currentUser[0]->role == "admin") {
+            $documents = Document::all();
+
+            if (count($documents) <= 0) {
+                return $this->response($response, 'No documents having been uploaded yet', 204);
+            }
+
+            foreach ($documents as $_document) {
+                $payload[] = $_document->output();
+            }
+
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'documents' => $payload
+            ]);
+        }
+    }
+
     public function getDocument($request, $response, $args)
     {
         error_reporting(E_ERROR | E_PARSE);
@@ -189,7 +212,7 @@ class DocumentController extends BaseController
                 ->withHeader('Content-Transfer-Encoding', 'binary')
                 ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
                 ->withHeader('Expires', '0')
-                ->withHeader('Content-Length',filesize($file))
+                ->withHeader('Content-Length', filesize($file))
                 ->withHeader('Cache-Control', 'must-revalidate')
                 ->withHeader('Pragma', 'public')
                 ->withBody($stream)

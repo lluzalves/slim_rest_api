@@ -27,6 +27,7 @@ $app->group('/recover', function () {
 
 $app->group('/documents', function () {
     $this->get('', DocumentController::class . ':all');
+    $this->get('/all', DocumentController::class . ':allUsersDocuments');
     $this->get('/{document_id}', DocumentController::class . ':getDocument');
     $this->get('/{document_id}/attachment', DocumentController::class . ':getDocumentAttachment');
     $this->post('', DocumentController::class . ':upsert')->add(new Filter());

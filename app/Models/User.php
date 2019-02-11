@@ -147,7 +147,6 @@ class User extends BaseModel
     {
         $bytes = random_bytes(8);
         $password = bin2hex($bytes);
-
         $user = User::user()->retrieveUser($email);
         $newpassword = password_hash($password, PASSWORD_BCRYPT);
         $user->password = $newpassword;

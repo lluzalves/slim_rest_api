@@ -88,14 +88,17 @@ class UserController extends BaseController
 
     public function recoverCredentials($request, $response, $next)
     {
-        if (PasswordHandler::resetPassword($request->getParsedBodyParam('email', ''))) {
+        $email = $request->getParsedBodyParam('email', '');
+        if (PasswordHandler::resetPassword($email)) {
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
+                'email' => $email,
                 'code' => 200,
             ]);
         } else {
             return $response->withStatus(200)->withJson([
                 'message' => 'Failure',
+                'email' => $email,
                 'code' => 401,
             ]);
         }
