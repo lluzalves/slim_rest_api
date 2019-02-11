@@ -104,4 +104,27 @@ class UserController extends BaseController
         }
     }
 
+    public function requestUsers($request, $response, $next)
+    {
+        $user = User::user()->getUser($this->getUserToken($request));
+        if ($user[0]->role = 'admin') {
+            $users = User::all();
+            if (count($users) <= 0) {
+                return $this->response($response, 'No user available', 204);
+            }
+
+            foreach ($users as $_user) {
+                $payload[] = $_user->output();
+            }
+
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'users' => $payload
+            ]);
+        }else{
+            return $this->response($response, 'Not allowed to access this content', 401);
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ use App\Middleware\BasicAuth;
 
 
 $app->group('/user', function () {
+    $this->get('/all', UserController::class . ':requestUsers');
     $this->get('/{email}', UserController::class . ':retrieve');
     $this->delete('/{id}', UserController::class . ':delete');
     $this->put('/{email}', UserController::class . ':updateInfo');
