@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use DateTime;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class User extends BaseModel
 {
@@ -19,7 +20,7 @@ class User extends BaseModel
     public function output()
     {
         $output = [];
-        $output['id']= $this->id;
+        $output['id'] = $this->id;
         $output['email'] = $this->email;
         $output['token_expiration'] = $this->token_expiration;
         $output['name'] = $this->name;
@@ -39,7 +40,7 @@ class User extends BaseModel
         $user->name = $request->getParsedBodyParam('name', '');
         $user->email = $request->getParsedBodyParam('email', '');
         $user->role = $request->getParsedBodyParam('role' . '');
-        $user->prontuario = $request->getParsedBodyParam('prontuario','');
+        $user->prontuario = $request->getParsedBodyParam('prontuario', '');
         $user->password = password_hash($request->getParsedBodyParam('password', ''), PASSWORD_BCRYPT);
         $user->token = $token = bin2hex(random_bytes(64));
         $user->token_expiration = date('Y-m-d+23:59:59');
@@ -144,9 +145,38 @@ class User extends BaseModel
 
     public function updatePassword($email)
     {
+        $bytes = random_bytes(8);
+        $password = bin2hex($bytes);
+
         $user = User::user()->retrieveUser($email);
-        $user->password = $password;
+        $newpassword = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = $newpassword;
         $user->save();
+
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->SMTPDebug = 0;
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'ifspdocs@gmail.com';
+            $mail->Password = 'haha no password here mate';
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port = 465;
+
+            $mail->setFrom('ifspdocs@gmail.com', 'ifdocs admin');
+            $mail->addAddress($user->email);
+
+            $mail->Subject = 'ifdocs - Oi, sua nova senha chegou';
+            $mail->Body = "A sua nova senha : " . $password;
+            $mail->send();
+            return true;
+
+        } catch (Exception $e) {
+            $error = $mail->ErrorInfo;
+            return false;
+        }
     }
 
     public function isAdmin($email)

@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\DocumentController;
+use App\Middleware\BaseAuth;
 use App\Middleware\FileFilter as Filter;
 use App\Controllers\UserController;
 use App\Middleware\BasicAuth;
@@ -18,7 +19,10 @@ $app->group('/register', function () {
 
 $app->group('/login', function () {
     $this->post('', BasicAuth::class . ':create');
-    $this->post('/recover', BasicAuth::class . 'recover');
+});
+
+$app->group('/recover', function () {
+    $this->post('', UserController::class . ':recoverCredentials');
 });
 
 $app->group('/documents', function () {

@@ -189,7 +189,8 @@ class DocumentController extends BaseController
                 ->withHeader('Content-Transfer-Encoding', 'binary')
                 ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
                 ->withHeader('Expires', '0')
-                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Content-Length',filesize($file))
+                ->withHeader('Cache-Control', 'must-revalidate')
                 ->withHeader('Pragma', 'public')
                 ->withBody($stream)
                 ->withJson([

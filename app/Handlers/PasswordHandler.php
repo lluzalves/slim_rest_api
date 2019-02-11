@@ -24,8 +24,8 @@ class PasswordHandler
         return password_verify($password, $user->password);
     }
 
-    private function resetPassword(){
-        User::updatePassword();
+    private function resetPassword($email){
+      return User::updatePassword($email);
     }
 
 }

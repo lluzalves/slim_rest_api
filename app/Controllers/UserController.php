@@ -86,4 +86,19 @@ class UserController extends BaseController
         }
     }
 
+    public function recoverCredentials($request, $response, $next)
+    {
+        if (PasswordHandler::resetPassword($request->getParsedBodyParam('email', ''))) {
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 200,
+            ]);
+        } else {
+            return $response->withStatus(200)->withJson([
+                'message' => 'Failure',
+                'code' => 401,
+            ]);
+        }
+    }
+
 }
