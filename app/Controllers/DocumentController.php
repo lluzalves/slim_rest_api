@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Document;
+use App\Models\User;
 use Slim\Http\UploadedFile;
 
 class DocumentController extends BaseController
@@ -12,12 +13,15 @@ class DocumentController extends BaseController
     protected $payload = [];
     protected $currentUser;
 
-    public function all($request, $response)
+    public function userDocuments($request, $response)
     {
         $currentUser = $this->currentUser($request);
 
-        $documents = Document::where('user_id', '=', $currentUser[0]->id)->get();
-
+        if ($currentUser[0]->role == "admin") {
+            $documents = Document::where('user_id', '=', $request->getQueryParams('user_id', ''))->get();
+        } else {
+            $documents = Document::where('user_id', '=', $currentUser[0]->id)->get();
+        }
         if (count($documents) <= 0) {
             return $this->response($response, 'No documents available for this user', 204);
         }
@@ -33,7 +37,7 @@ class DocumentController extends BaseController
         ]);
     }
 
-    public function allUsersDocuments($request, $response)
+    public function allDocuments($request, $response)
     {
         $currentUser = $this->currentUser($request);
 
@@ -58,9 +62,15 @@ class DocumentController extends BaseController
 
     public function getDocument($request, $response, $args)
     {
-        error_reporting(E_ERROR | E_PARSE);
-        $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        $currentUser = $this->currentUser($request);
+
+        if ($currentUser->role = 'admin') {
+            $document = Document::where('id', '=', $args['document_id'])->take(1)->get();
+        } else {
+            $document = Document::where('id', '=', $args['document_id'])
+                ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        }
+
         if ($document[0]->exists) {
             $payload[] = $document[0]->output();
             return $response->withStatus(200)
@@ -74,16 +84,8 @@ class DocumentController extends BaseController
         }
     }
 
-    public function upsert($request, $response)
+    public function upsert($request, $response, $directory, $currentUser, $type)
     {
-        $currentUser = $this->currentUser($request);
-        $type = $request->getParsedBodyParam('type', '');
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->prontuario . DIRECTORY_SEPARATOR . $type;
-
-        if (!is_dir($directory)) {
-            mkdir($directory, 0700, true);
-        }
-
         $uploadedFiles = $request->getUploadedFiles();
         $uploadedFile = $uploadedFiles['file'];
 
@@ -96,18 +98,17 @@ class DocumentController extends BaseController
 
         if (!empty($id)) {
             $documents = Document::where('id', '=', $id)
-                ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+                ->where('user_id', '=', $currentUser->id)->take(1)->get();
             $document = $documents[0];
         } else {
             $document = new Document();
         }
-
         $document->description = $request->getParsedBodyParam('description', '');
-        $document->user_id = $currentUser[0]->id;
+        $document->user_id = $currentUser->id;
         $document->is_validated = false;
         $document->type = $type;
         $document->notification = 'Pendente';
-        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser[0]->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
+        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
         if ($document->id) {
@@ -122,15 +123,62 @@ class DocumentController extends BaseController
         }
     }
 
+    public function userUpsert($request, $response)
+    {
+        $currentUser = $this->currentUser($request);
+        $type = $request->getParsedBodyParam('type', '');
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $currentUser[0]->prontuario . DIRECTORY_SEPARATOR . $type;
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0700, true);
+        }
+        $files = glob($directory . '/*');
+        foreach ($files as $file) {
+            if (is_file($file))
+                unlink($file);
+        }
+
+        $this->upsert($request, $response, $directory, $currentUser[0], $type);
+    }
+
+    public function adminUpsert($request, $response)
+    {
+        $currentUser = $this->currentUser($request);
+        if ($currentUser[0]->role = 'admin') {
+            $targetUser = $this->targetUser($request->getParsedBodyParam('user_id'));
+            $type = $request->getParsedBodyParam('type', '');
+            $directory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'raw' . DIRECTORY_SEPARATOR . $targetUser[0]->prontuario . DIRECTORY_SEPARATOR . $type;
+
+            if (!is_dir($directory)) {
+                mkdir($directory, 0700, true);
+            }
+            $files = glob($directory . '/*');
+            foreach ($files as $file) {
+                if (is_file($file))
+                    unlink($file);
+            }
+            $this->upsert($request, $response, $directory, $targetUser[0], $type);
+        }
+    }
+
+
     public function delete($request, $response, $args)
     {
-        $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        $currentUser = $this->currentUser($request);
+
+        if ($currentUser->role = 'admin') {
+            $document = Document::where('id', '=', $args['document_id'])->take(1)->get();
+        } else {
+            $document = Document::where('id', '=', $args['document_id'])
+                ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        }
+
         if ($document[0]->exists) {
             if ($document[0]->is_validated == 1) {
                 return $this->response($response, 'Unable to complete request, document is already validated', 401);
             } else {
                 $document[0]->delete();
+                unlink($document[0]->file_url);
                 if (!$document[0]->exists) {
                     return $this->response($response, 'Deleted successfully', 204);
                 }
@@ -145,27 +193,28 @@ class DocumentController extends BaseController
     {
         $_isvalidated = $request->getParsedBodyParam('is_validated');
 
-        $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id);
+        $currentUser = $this->currentUser($request);
 
-        $document->isvalidated = $_isvalidated;
+        if ($currentUser->role = 'admin') {
+            $document = Document::where('id', '=', $args['document_id'])->take(1)->get();
+            $document->isvalidated = $_isvalidated;
 
-        $document->save();
+            $document->save();
 
-        if ($document->id) {
-            $payload[] = $document->output();
-            return $response->withStatus(200)->withJson([
-                'message' => 'Success',
-                'code' => 204,
-                'documents' => $payload
-            ]);
-        } else {
-            return $response->withStatus(400);
+            if ($document->id) {
+                $payload[] = $document->output();
+                return $response->withStatus(200)->withJson([
+                    'message' => 'Success',
+                    'code' => 204,
+                    'documents' => $payload
+                ]);
+            } else {
+                return $response->withStatus(400);
+            }
         }
     }
 
-    public
-    function deleteAll($request, $response, $args)
+    public function deleteAll($request, $response, $args)
     {
         $documents = Document::where('user_id', '=', $this->currentUser($request)[0]->id);
 
@@ -196,9 +245,14 @@ class DocumentController extends BaseController
 
     public function getDocumentAttachment($request, $response, $args)
     {
-        error_reporting(E_ERROR | E_PARSE);
-        $document = Document::where('id', '=', $args['document_id'])
-            ->where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        $currentUser = $this->currentUser($request);
+
+        if ($currentUser->role = 'admin') {
+            $document = Document::where('id', '=', $args['document_id'])->take(1)->get();
+        } else {
+            $document = Document::where('id', '=', $args['document_id'])->
+            where('user_id', '=', $this->currentUser($request)[0]->id)->take(1)->get();
+        }
         if ($document[0]->exists) {
             $payload[] = $document[0]->fileOutput();
             $file = $document[0]->file_url;
@@ -221,6 +275,7 @@ class DocumentController extends BaseController
                     'code' => 204,
                     'documents' => $payload
                 ]);
+
         } else {
             return $response->withStatus(400);
         }

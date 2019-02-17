@@ -17,11 +17,54 @@ class UserController extends BaseController
             return $response->withStatus(409)->withJson($query_exception->getMessage());
         }
         if (!is_null($user)) {
+            $user_notification = NotificationController::createUserNotification(array(
+                'receiver_id' => $user->id,
+                'body' => "Seja bem vindo ao ifdocs " . $user->name,
+                'creator_id' => 1,
+                'read_status' => false,
+                'type' => 'sucesso'
+            ));
+
+            $user_notification->notify($user->email, $user_notification->body);
+
+            $admin_notification = NotificationController::createUserNotification(array(
+                'receiver_id' => 1,
+                'body' => "Novo cadastro " . $user->email,
+                'creator_id' => $user->id,
+                'read_status' => false,
+                'type' => 'alerta'
+            ));
+
+            $admin_notification->notify('ifspdocs@gmail.com', $admin_notification->body);
+
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
                 'code' => 200]);
         } else {
             return $response->withStatus(400)->withJson('Failed, please try again');
+        }
+    }
+
+    public function requestUsers($request, $response, $next)
+    {
+        $user = User::user()->getUser($this->getUserToken($request));
+        if ($user[0]->role = 'admin') {
+            $users = User::where('role', '=', 'aluno')->get();
+            if (count($users) <= 0) {
+                return $this->response($response, 'No user available', 204);
+            }
+
+            foreach ($users as $_user) {
+                $payload[] = $_user->output();
+            }
+
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+                'users' => $payload
+            ]);
+        } else {
+            return $this->response($response, 'Not allowed to access this content', 401);
         }
     }
 
@@ -68,21 +111,7 @@ class UserController extends BaseController
                 return $this->response($response, 'Unable to find requested user', 404);
             }
         } else {
-            return $this->response($response, 'Missing parameter [name], try again', 401);
-        }
-    }
-
-    public function recover($request, $response, $next)
-    {
-        if (!empty($args['email'])) {
-            $user = PasswordHandler::recover()->updateEmail($this->getUserToken($request), $request->getParam('email', ''));
-            if (!empty($user)) {
-                return $this->response($response, 'User updated successfully', 200);
-            } else {
-                return $this->response($response, 'Unable to find requested user', 404);
-            }
-        } else {
-            return $this->response($response, 'Missing parameter [name], try again', 401);
+            return $this->response($response, 'Missing parameter [email], try again', 401);
         }
     }
 
@@ -101,29 +130,6 @@ class UserController extends BaseController
                 'email' => $email,
                 'code' => 401,
             ]);
-        }
-    }
-
-    public function requestUsers($request, $response, $next)
-    {
-        $user = User::user()->getUser($this->getUserToken($request));
-        if ($user[0]->role = 'admin') {
-            $users = User::all();
-            if (count($users) <= 0) {
-                return $this->response($response, 'No user available', 204);
-            }
-
-            foreach ($users as $_user) {
-                $payload[] = $_user->output();
-            }
-
-            return $response->withStatus(200)->withJson([
-                'message' => 'Success',
-                'code' => 204,
-                'users' => $payload
-            ]);
-        }else{
-            return $this->response($response, 'Not allowed to access this content', 401);
         }
     }
 

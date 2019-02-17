@@ -5,7 +5,7 @@ use slim_app;
 
 
    -- create user table
-  create table if not exists `slim_app`.`users`(
+create table if not exists `slim_app`.`users`(
   `id` int auto_increment not null,
   `name` varchar(100) not null,
   `email` varchar(100) not null,
@@ -19,10 +19,11 @@ use slim_app;
   `updated_at` datetime not null,
    unique(email),
    primary key (id))
-   CHARACTER SET utf8 COLLATE utf8_general_ci;
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 
 -- create document table
-   create table if not exists `slim_app`.`documents`(
+create table if not exists `slim_app`.`documents`(
   `id` int auto_increment not null,
   `description` varchar(100) not null,
   `user_id` int (10) not null,
@@ -34,16 +35,35 @@ use slim_app;
   `type` varchar(100) not null,
    primary key (id),
    foreign key (user_id) references users(id))
-   CHARACTER SET utf8 COLLATE utf8_general_ci;
+CHARACTER SET utf8 COLLATE utf8_general_ci;
 
--- create periodic table
-   create table if not exists `slim_app`.`periodicurl`(
-  `id` int auto_increment not null,
-  `url_token` DATETIME not null,
-  `user_email`  varchar(100) not null,
-  `created_at` datetime not null,
-  `updated_at` datetime not null,
-   primary key (id),
-   foreign key (user_email) references users(email))
-   CHARACTER SET utf8 COLLATE utf8_general_ci;
+-- create notification table
+create table if not exists `slim_app`.`usnotifications`(
+`id` int auto_increment not null,
+`body` varchar(1000) not null,
+`created_at` datetime not null,
+`updated_at` datetime not null,
+`creator_id` int (10) not null,
+`receiver_id` int (10) not null,
+`read_status` tinyint(1) not null,
+`type` varchar (50) not null,
+ primary key (id),
+ foreign key (receiver_id) references users(id))
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+-- create notification table
+create table if not exists `slim_app`.`docnotifications`(
+`id` int auto_increment not null,
+`body` varchar(1000) not null,
+`created_at` datetime not null,
+`updated_at` datetime not null,
+`creator_id` int (10) not null,
+`receiver_id` int (10) not null,
+`document_id` int (10) not null,
+`read_status` tinyint(1) not null,
+`type`  varchar (50) not null,
+ primary key (id),
+ foreign key (document_id) references documents(id))
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 

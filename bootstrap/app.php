@@ -24,7 +24,8 @@ $app->add(function ($request, $response, $next) {
 $request = $app->getContainer()->get('request');
 $requestedUri = $request->getServerParams()['REQUEST_URI'];
 if (strpos($requestedUri, '/slim_app/public/documents') !== false ||
-    strpos($requestedUri, '/slim_app/public/user') !== false) {
+    strpos($requestedUri, '/slim_app/public/user') !== false  ||
+strpos($requestedUri, '/slim_app/public/notifications') !== false) {
     $app->add(new TokenAuth());
 } else if (strpos($requestedUri, '/slim_app/public/register') !== false || strpos($requestedUri, '/slim_app/public/recover') !== false) {
 

@@ -37,6 +37,11 @@ abstract class BaseController
         }
     }
 
+    protected function targetUser($id)
+    {
+           return User::user()->getUserById($id);
+    }
+
     public function getUserToken($request)
     {
         $auth = $request->getHeader('Authorization');

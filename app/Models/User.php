@@ -48,6 +48,7 @@ class User extends BaseModel
         if (empty($user->name) or empty($user->email) or empty($user->password)) {
             return null;
         }
+
         $user->save();
 
         return $user;
@@ -121,6 +122,11 @@ class User extends BaseModel
         return User::where('token', '=', $token)->take(1)->get();
     }
 
+    public function getUserById($id)
+    {
+        return User::where('id', '=', $id)->take(1)->get();
+    }
+
     public function updateEmail($token, $newEmail)
     {
         $user = User::where('token', '=', $token)->take(1)->get();
@@ -160,7 +166,7 @@ class User extends BaseModel
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'ifspdocs@gmail.com';
-            $mail->Password = 'haha no password here mate';
+            $mail->Password = 'Ifsp8989!';
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
 
