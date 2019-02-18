@@ -269,12 +269,7 @@ class DocumentController extends BaseController
                 ->withHeader('Content-Length', filesize($file))
                 ->withHeader('Cache-Control', 'must-revalidate')
                 ->withHeader('Pragma', 'public')
-                ->withBody($stream)
-                ->withJson([
-                    'message' => 'Success',
-                    'code' => 204,
-                    'documents' => $payload
-                ]);
+                ->withBody($stream);
 
         } else {
             return $response->withStatus(400);
