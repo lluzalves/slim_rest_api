@@ -191,7 +191,12 @@ class DocumentController extends BaseController
 
     public function validate($request, $response, $args)
     {
-        $_isvalidated = $request->getParsedBodyParam('is_validated');
+        $_isvalidated = $request->getQueryParams('is_validated');
+        $document_id = $request->getQueryParams('document_id');
+
+        var_dump($_isvalidated);
+        var_dump($document_id);
+        exit();
 
         $currentUser = $this->currentUser($request);
 

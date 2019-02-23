@@ -36,6 +36,7 @@ $app->group('/documents', function () {
     $this->get('/all', DocumentController::class . ':allDocuments');
     $this->get('/{document_id}', DocumentController::class . ':getDocument');
     $this->get('/{document_id}/attachment', DocumentController::class . ':getDocumentAttachment');
+    $this->post('/validate/{document_id}', DocumentController::class . ':validate');
     $this->post('', DocumentController::class . ':userUpsert')->add(new Filter());
     $this->post('/upsert', DocumentController::class . ':adminUpsert')->add(new Filter());
     $this->delete('/{document_id}', DocumentController::class . ':delete');
