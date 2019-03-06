@@ -108,7 +108,7 @@ class DocumentController extends BaseController
         $document->is_validated = false;
         $document->type = $type;
         $document->notification = 'Pendente';
-        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
+        $document->file_url = '/opt/lampp/htdocs/slim_app/raw' . DIRECTORY_SEPARATOR . $currentUser->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
         if ($document->id) {

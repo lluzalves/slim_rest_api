@@ -27,6 +27,35 @@ class NotificationController extends BaseController
         return $notification;
     }
 
+    public function createNotification($request, $response)
+    {
+
+        $notification = new Usnotification();
+        $notification->creator_id = 1;
+        $notification->receiver_id = $request->getParsedBodyParam('receiver_id', '');
+        $notification->type = 'atencao';
+        $notification->body = $request->getParsedBodyParam('body', '');
+        $notification->save();
+
+
+        if (empty($notification->body) or empty($notification->receiver_id) or empty($notification->creator_id) or empty($notification->type)) {
+            return null;
+        }
+
+        $notification->save();
+
+        if ($notification->id) {
+            $payload[] = $notification->output();
+            return $response->withStatus(200)->withJson([
+                'message' => 'Success',
+                'code' => 204,
+            ]);
+        } else {
+            return $response->withStatus(400);
+        }
+
+    }
+
     public function allUserNotifications($request, $response)
     {
         $currentUser = $this->currentUser($request);
@@ -47,6 +76,7 @@ class NotificationController extends BaseController
             'notifications' => $payload
         ]);
     }
+
 
     public function createDocumentNotification($data)
     {

@@ -17,6 +17,8 @@ $app->group('/user', function () {
 
 $app->group("/notifications", function (){
    $this->get('',NotificationController::class . ':allUserNotifications');
+    $this->post('/{user_id}', NotificationController::class . ':createNotification');
+    $this->delete('/{notification_id}', NotificationController::class . ':deleteNotification');
 });
 
 $app->group('/register', function () {
