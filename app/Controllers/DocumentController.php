@@ -191,23 +191,20 @@ class DocumentController extends BaseController
 
     public function validate($request, $response, $args)
     {
-        $_isvalidated = $request->getQueryParams('is_validated');
-        $document_id = $request->getQueryParams('document_id');
-
-        var_dump($_isvalidated);
-        var_dump($document_id);
-        exit();
+        $_isvalidated = $request->getParsedBodyParam('is_validated', '');
+        $document_id = $request->getParsedBodyParam('document_id');
 
         $currentUser = $this->currentUser($request);
 
         if ($currentUser->role = 'admin') {
-            $document = Document::where('id', '=', $args['document_id'])->take(1)->get();
-            $document->isvalidated = $_isvalidated;
+            $document = Document::where('id', '=', $document_id)->take(1)->get();
 
-            $document->save();
+            $document[0]->is_validated = $_isvalidated;
 
-            if ($document->id) {
-                $payload[] = $document->output();
+            $document[0]->save();
+
+            if ($document[0]->id) {
+                $payload[] = $document[0]->output();
                 return $response->withStatus(200)->withJson([
                     'message' => 'Success',
                     'code' => 204,
