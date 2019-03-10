@@ -10,7 +10,8 @@ use App\Middleware\BasicAuth;
 
 $app->group('/user', function () {
     $this->get('/all', UserController::class . ':requestUsers');
-    $this->get('/{email}', UserController::class . ':retrieve');
+    $this->get('/{email}', UserController::class . ':retrieveUserByEmail');
+    $this->get('/filter/{prontuario}', UserController::class . ':retrieveUserByProntuario');
     $this->delete('/{id}', UserController::class . ':delete');
     $this->put('/{email}', UserController::class . ':updateInfo');
 });

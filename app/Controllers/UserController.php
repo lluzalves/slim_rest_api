@@ -82,10 +82,29 @@ class UserController extends BaseController
     }
 
 
-    public function retrieve($request, $response, $args)
+    public function retrieveUserByEmail($request, $response, $args)
     {
         if (!empty($args['email'])) {
-            $user = User::user()->retrieveUser($args['email']);
+            $user = User::user()->retrieveUserByEmail($args['email']);
+            if ($user->exists) {
+                $payload = $user->output();
+                return $response->withStatus(200)->withJson([
+                    'message' => 'Success',
+                    'code' => 200,
+                    'user' => $payload
+                ]);
+            } else {
+                return $this->response($response, 'Unable to find requested user', 404);
+            }
+        } else {
+            return $this->response($response, 'Missing parameter [name], try again', 401);
+        }
+    }
+
+    public function retrieveUserByProntuario($request, $response, $args)
+    {
+        if (!empty($args['prontuario'])) {
+            $user = User::user()->retrieveUserByProntuario($args['prontuario']);
             if ($user->exists) {
                 $payload = $user->output();
                 return $response->withStatus(200)->withJson([

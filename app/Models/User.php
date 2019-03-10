@@ -85,9 +85,18 @@ class User extends BaseModel
     }
 
 
-    public function retrieveUser($email)
+    public function retrieveUserByEmail($email)
     {
         $user = User::where('email', '=', $email)->take(1)->get();
+
+        $this->currentUser = $user[0];
+
+        return $this->currentUser;
+    }
+
+    public function retrieveUserByProntuario($prontuario)
+    {
+        $user = User::where('prontuario', '=', $prontuario)->take(1)->get();
 
         $this->currentUser = $user[0];
 
@@ -153,7 +162,7 @@ class User extends BaseModel
     {
         $bytes = random_bytes(8);
         $password = bin2hex($bytes);
-        $user = User::user()->retrieveUser($email);
+        $user = User::user()->retrieveUserByEmail($email);
         $newpassword = password_hash($password, PASSWORD_BCRYPT);
         $user->password = $newpassword;
         $user->save();
