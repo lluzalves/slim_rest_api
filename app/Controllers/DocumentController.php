@@ -23,7 +23,7 @@ class DocumentController extends BaseController
             $documents = Document::where('user_id', '=', $currentUser[0]->id)->get();
         }
         if (count($documents) <= 0) {
-            return $this->response($response, 'No documents available for this user', 204);
+            return $this->response($response, 'No documents available for this user', 200);
         }
 
         foreach ($documents as $_document) {
@@ -32,7 +32,7 @@ class DocumentController extends BaseController
 
         return $response->withStatus(200)->withJson([
             'message' => 'Success',
-            'code' => 204,
+            'code' => 200,
             'documents' => $payload
         ]);
     }
@@ -45,7 +45,7 @@ class DocumentController extends BaseController
             $documents = Document::all();
 
             if (count($documents) <= 0) {
-                return $this->response($response, 'No documents having been uploaded yet', 204);
+                return $this->response($response, 'No documents having been uploaded yet', 200);
             }
 
             foreach ($documents as $_document) {
@@ -54,7 +54,7 @@ class DocumentController extends BaseController
 
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
-                'code' => 204,
+                'code' => 200,
                 'documents' => $payload
             ]);
         }
@@ -76,7 +76,7 @@ class DocumentController extends BaseController
             return $response->withStatus(200)
                 ->withJson([
                     'message' => 'Success',
-                    'code' => 204,
+                    'code' => 200,
                     'documents' => $payload
                 ]);
         } else {
@@ -91,7 +91,7 @@ class DocumentController extends BaseController
 
         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($directory, $uploadedFile);
-            $response->write('uploaded ' . $filename . '<br/>');
+           // $response->write('uploaded ' . $filename . '<br/>');
         }
 
         $id = $request->getParsedBodyParam('id', '');
@@ -115,7 +115,7 @@ class DocumentController extends BaseController
             $payload[] = $document->output();
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
-                'code' => 204,
+                'code' => 200,
                 'documents' => $payload
             ]);
         } else {
@@ -180,7 +180,7 @@ class DocumentController extends BaseController
                 $document[0]->delete();
                 unlink($document[0]->file_url);
                 if (!$document[0]->exists) {
-                    return $this->response($response, 'Deleted successfully', 204);
+                    return $this->response($response, 'Deleted successfully', 200);
                 }
             }
         } else {
@@ -207,7 +207,7 @@ class DocumentController extends BaseController
                 $payload[] = $document[0]->output();
                 return $response->withStatus(200)->withJson([
                     'message' => 'Success',
-                    'code' => 204,
+                    'code' => 200,
                     'documents' => $payload
                 ]);
             } else {

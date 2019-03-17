@@ -48,7 +48,7 @@ class NotificationController extends BaseController
             $payload[] = $notification->output();
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
-                'code' => 204,
+                'code' => 200,
             ]);
         } else {
             return $response->withStatus(400);
@@ -63,7 +63,7 @@ class NotificationController extends BaseController
         $notifications = Usnotification::where('receiver_id', '=', $currentUser[0]->id)->get();
 
         if (count($notifications) <= 0) {
-            return $this->response($response, 'No notifications available for this user', 204);
+            return $this->response($response, 'No notifications available for this user', 200);
         }
 
         foreach ($notifications as $_notification) {
@@ -72,7 +72,7 @@ class NotificationController extends BaseController
 
         return $response->withStatus(200)->withJson([
             'message' => 'Success',
-            'code' => 204,
+            'code' => 200,
             'notifications' => $payload
         ]);
     }

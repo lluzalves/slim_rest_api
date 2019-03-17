@@ -51,7 +51,7 @@ class UserController extends BaseController
         if ($user[0]->role = 'admin') {
             $users = User::where('role', '=', 'aluno')->get();
             if (count($users) <= 0) {
-                return $this->response($response, 'No user available', 204);
+                return $this->response($response, 'No user available', 200);
             }
 
             foreach ($users as $_user) {
@@ -60,7 +60,7 @@ class UserController extends BaseController
 
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
-                'code' => 204,
+                'code' => 200,
                 'users' => $payload
             ]);
         } else {
@@ -72,7 +72,7 @@ class UserController extends BaseController
     {
         if (!empty($args['id'])) {
             if (User::user()->remove($args['id'])) {
-                return $this->response($response, 'Deleted successfully', 204);
+                return $this->response($response, 'Deleted successfully', 200);
             } else {
                 return $this->response($response, 'Unable to complete request', 400);
             }
