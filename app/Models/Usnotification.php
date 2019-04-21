@@ -87,7 +87,7 @@ class Usnotification extends BaseModel
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'ifspdocs@gmail.com';
-            $mail->Password = 'Ifsp8989!';
+            $mail->Password = 'Ifsp889!!';
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
 

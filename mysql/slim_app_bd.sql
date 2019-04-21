@@ -37,7 +37,7 @@ create table if not exists `slim_app`.`documents`(
    foreign key (user_id) references users(id))
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
--- create notification table
+-- create user notification table
 create table if not exists `slim_app`.`usnotifications`(
 `id` int auto_increment not null,
 `body` varchar(1000) not null,
@@ -51,7 +51,7 @@ create table if not exists `slim_app`.`usnotifications`(
  foreign key (receiver_id) references users(id))
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
--- create notification table
+-- create document notification table
 create table if not exists `slim_app`.`docnotifications`(
 `id` int auto_increment not null,
 `body` varchar(1000) not null,
