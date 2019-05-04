@@ -22,11 +22,29 @@ create table if not exists `slim_app`.`users`(
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
+-- create edict table
+create table if not exists `slim_app`.`edict`(
+`id` int auto_increment not null,
+`description` varchar(100) not null,
+`title` varchar (100) not null,
+`created_by` varchar(255) not null,
+`elegilable_roles` varchar(100) not null,
+`created_at` datetime not null,
+`updated_at` datetime not null,
+`notification` char(120) not null,
+`is_available` tinyint(1) not null,
+`starts_at` datetime not null,
+`end_at` datetime not null,
+`type` varchar(100) not null,
+primary key (id))
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 -- create document table
 create table if not exists `slim_app`.`documents`(
   `id` int auto_increment not null,
   `description` varchar(100) not null,
   `user_id` int (10) not null,
+  `edict_id` int (10) not null,
   `file_url` varchar(255) not null,
   `created_at` datetime not null,
   `updated_at` datetime not null,
@@ -34,7 +52,8 @@ create table if not exists `slim_app`.`documents`(
   `is_validated` tinyint(1) not null,
   `type` varchar(100) not null,
    primary key (id),
-   foreign key (user_id) references users(id))
+   foreign key (user_id) references users(id),
+   foreign key (edict_id) references edict(id))
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- create user notification table
