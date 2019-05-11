@@ -1,8 +1,8 @@
 <?php
 
 use App\Controllers\DocumentController;
+use App\Controllers\EdictController;
 use App\Controllers\NotificationController;
-use App\Middleware\BaseAuth;
 use App\Middleware\FileFilter as Filter;
 use App\Controllers\UserController;
 use App\Middleware\BasicAuth;
@@ -32,6 +32,11 @@ $app->group('/login', function () {
 
 $app->group('/recover', function () {
     $this->post('', UserController::class . ':recoverCredentials');
+});
+
+$app->group('/edict', function () {
+    $this->get('/all',EdictController::class . ':allEdicts');
+    $this->post('/add', EdictController::class . ':create');
 });
 
 $app->group('/documents', function () {

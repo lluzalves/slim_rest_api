@@ -3,8 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Document;
-use App\Models\User;
-use Slim\Http\UploadedFile;
+use Slim\Http\Stream;
 
 class DocumentController extends BaseController
 {
@@ -40,7 +39,6 @@ class DocumentController extends BaseController
     public function allDocuments($request, $response)
     {
         $currentUser = $this->currentUser($request);
-
         if ($currentUser[0]->role == "admin") {
             $documents = Document::all();
 
@@ -91,10 +89,15 @@ class DocumentController extends BaseController
 
         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($directory, $uploadedFile);
-           // $response->write('uploaded ' . $filename . '<br/>');
+            // $response->write('uploaded ' . $filename . '<br/>');
         }
 
         $id = $request->getParsedBodyParam('id', '');
+        $edict_id = $request->getParsedBodyParam('edict_id', '');
+
+        if (!empty($edict_id)) {
+            return $response->withStatus(401);
+        }
 
         if (!empty($id)) {
             $documents = Document::where('id', '=', $id)
@@ -103,16 +106,18 @@ class DocumentController extends BaseController
         } else {
             $document = new Document();
         }
+        $document->edict_id = $edict_id;
         $document->description = $request->getParsedBodyParam('description', '');
         $document->user_id = $currentUser->id;
         $document->is_validated = false;
         $document->type = $type;
         $document->notification = 'Pendente';
-        $document->file_url = '/opt/lampp/htdocs/slim_app/raw' . DIRECTORY_SEPARATOR . $currentUser->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
+        $document->edict_id = "9";
+        $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 
         if ($document->id) {
-            $payload[] = $document->output();
+            $payload = $document->output();
             return $response->withStatus(200)->withJson([
                 'message' => 'Success',
                 'code' => 200,
@@ -233,18 +238,6 @@ class DocumentController extends BaseController
         }
     }
 
-    public function moveUploadedFile($directory, UploadedFile $uploadedFile)
-    {
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $basename = bin2hex(random_bytes(8));
-        $filename = sprintf('%s.%0.8s', $basename, $extension);
-
-        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-
-        return $filename;
-    }
-
-
     public function getDocumentAttachment($request, $response, $args)
     {
         $currentUser = $this->currentUser($request);
@@ -259,7 +252,7 @@ class DocumentController extends BaseController
             $payload[] = $document[0]->fileOutput();
             $file = $document[0]->file_url;
             $openFile = fopen($file, 'rb');
-            $stream = new \Slim\Http\Stream($openFile);
+            $stream = new Stream($openFile);
             return $response->withStatus(200)
                 ->withHeader('Content-Type', 'application/force-download')
                 ->withHeader('Content-Type', 'application/octet-stream')

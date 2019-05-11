@@ -23,12 +23,12 @@ CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 
 -- create edict table
-create table if not exists `slim_app`.`edict`(
+create table if not exists `slim_app`.`edicts`(
 `id` int auto_increment not null,
 `description` varchar(100) not null,
 `title` varchar (100) not null,
 `created_by` varchar(255) not null,
-`elegilable_roles` varchar(100) not null,
+`roles` varchar(100) not null,
 `created_at` datetime not null,
 `updated_at` datetime not null,
 `notification` char(120) not null,

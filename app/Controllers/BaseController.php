@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Middleware\TokenAuth;
 use App\Models\User;
 use Interop\Container\ContainerInterface;
+use Slim\Http\UploadedFile;
 
 abstract class BaseController
 {
@@ -46,6 +47,17 @@ abstract class BaseController
     {
         $auth = $request->getHeader('Authorization');
         return substr($auth[0], strpos($auth[0], '') + 7);
+    }
+
+    public function moveUploadedFile($directory, UploadedFile $uploadedFile)
+    {
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $basename = bin2hex(random_bytes(8));
+        $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+        return $filename;
     }
 
 }

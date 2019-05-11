@@ -12,7 +12,6 @@ class PasswordHandler
         return (new static)->$method(...$parameters);
     }
 
-
     private function hashPassword($password)
     {
         return password_hash($password, PASSWORD_BCRYPT);
@@ -24,8 +23,9 @@ class PasswordHandler
         return password_verify($password, $user->password);
     }
 
-    private function resetPassword($email){
-      return User::updatePassword($email);
+    private function resetPassword($email)
+    {
+        return User::updatePassword($email);
     }
 
 }
