@@ -6,7 +6,8 @@
         "illuminate/database": "^5.7",
         "tuupola/slim-basic-auth": "^3.2",
       "ext-json": "*",
-        "phpmailer/phpmailer": "^6.0"
+        "phpmailer/phpmailer": "^6.0",
+      "ext-http": "*"
     },
     "autoload": {
         "psr-4": {

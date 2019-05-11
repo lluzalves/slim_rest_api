@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use DateTime;
+use http\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Usnotification extends BaseModel
@@ -70,7 +70,7 @@ class Usnotification extends BaseModel
 
     public function updateNotification($id, $read_status)
     {
-        $notification = UNotification::where('id', '=', $id)->take(1)->get();
+        $notification = Usnotification::where('id', '=', $id)->take(1)->get();
 
         $notification->readstatus = $read_status;
 
@@ -79,7 +79,7 @@ class Usnotification extends BaseModel
 
     public function notify($email, $body)
     {
-        $mail = new PHPMailer(true);
+        $mail = new PHPMailer();
 
         try {
             $mail->SMTPDebug = 0;
@@ -101,6 +101,7 @@ class Usnotification extends BaseModel
 
         } catch (Exception $e) {
             $error = $mail->ErrorInfo;
+            var_dump($error.$e->getMessage());
             return false;
         }
     }
