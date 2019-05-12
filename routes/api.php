@@ -45,6 +45,7 @@ $app->group('/edict', function () {
 $app->group('/documents', function () {
     $this->get('', DocumentController::class . ':userDocuments');
     $this->get('/all', DocumentController::class . ':allDocuments');
+    $this->get('/all/{edict_id}', DocumentController::class . ':allDocumentsForEdict');
     $this->get('/{document_id}', DocumentController::class . ':getDocument');
     $this->get('/{document_id}/attachment', DocumentController::class . ':getDocumentAttachment');
     $this->post('/validate/{document_id}', DocumentController::class . ':validate');

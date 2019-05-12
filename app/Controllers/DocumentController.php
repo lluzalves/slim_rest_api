@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\Document;
+use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Support\Carbon;
 use Slim\Http\Stream;
 
 class DocumentController extends BaseController
@@ -56,6 +58,30 @@ class DocumentController extends BaseController
                 'documents' => $payload
             ]);
         }
+    }
+
+    public function allDocumentsForEdict($request, $response, $args)
+    {
+        $currentUser = $this->currentUser($request);
+
+        $documents = DB::table('documents')->where([
+            ['user_id', '=', $currentUser[0]->id],
+            ['edict_id', '=', $args['edict_id']]
+        ])->get();
+
+        if (count($documents) <= 0) {
+            return $this->response($response, 'No documents available for this user', 200);
+        }
+
+        foreach ($documents as $_document) {
+            $payload[] = $_document->output();
+        }
+
+        return $response->withStatus(200)->withJson([
+            'message' => 'Success',
+            'code' => 200,
+            'documents' => $payload
+        ]);
     }
 
     public function getDocument($request, $response, $args)
