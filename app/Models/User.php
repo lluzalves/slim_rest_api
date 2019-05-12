@@ -26,6 +26,7 @@ class User extends BaseModel
         $output['name'] = $this->name;
         $output['prontuario'] = $this->prontuario;
         $output['user_uri'] = '/users/' . $this->id;
+        $output['role'] = $this->role;
         $output['created_at'] = $this->created_at->toDateTimeString();;
         $output['updated_at'] = $this->updated_at->toDateTimeString();;
 

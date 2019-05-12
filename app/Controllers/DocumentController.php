@@ -93,9 +93,9 @@ class DocumentController extends BaseController
         }
 
         $id = $request->getParsedBodyParam('id', '');
-        $edict_id = $request->getParsedBodyParam('edict_id', '');
+        $edict_id = $request->getParsedBodyParam('edict_id', null);
 
-        if (!empty($edict_id)) {
+        if (empty($edict_id)) {
             return $response->withStatus(401);
         }
 
@@ -112,7 +112,6 @@ class DocumentController extends BaseController
         $document->is_validated = false;
         $document->type = $type;
         $document->notification = 'Pendente';
-        $document->edict_id = "9";
         $document->file_url = 'C:\xampp\htdocs\slim_app\raw' . DIRECTORY_SEPARATOR . $currentUser->prontuario . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $filename;
         $document->save();
 

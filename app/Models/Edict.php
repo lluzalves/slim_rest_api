@@ -2,6 +2,7 @@
 
 
 namespace App\Models;
+
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Support\Carbon;
 
@@ -34,8 +35,18 @@ class Edict extends BaseModel
     public function allForRole($role)
     {
         $edicts = DB::table('edicts')->where([
-            ['roles', '=', 'Aluno'],
-            ['starts_at', '>=', Carbon::today()->toDateString()]
+            ['roles', '=', $role],
+            ['end_at', '>=', Carbon::today()->toDateString()]
+        ])->get();
+
+        return $edicts;
+    }
+
+    public function allForType($type)
+    {
+        $edicts = DB::table('edicts')->where([
+            ['type', '=', $type],
+            ['end_at', '>=', Carbon::today()->toDateString()]
         ])->get();
 
         return $edicts;
@@ -47,13 +58,13 @@ class Edict extends BaseModel
 
         $edict->description = $request->getParsedBodyParam('description', '');
         $edict->title = $request->getParsedBodyParam('title', '');
-        $edict->roles = $request->getParsedBodyParam('roles', '');
+        $edict->roles = $request->getParsedBodyParam('roles', 'admin');
         $edict->starts_at = $request->getParsedBodyParam('starts_at', '');
         $edict->created_by = $request->getParsedBodyParam('created_by', '');
         $edict->end_at = $request->getParsedBodyParam('end_at', '');
-        $edict->type = "edital";
+        $edict->type = $request->getParsedBodyParam('type', '');
         $edict->is_available = 0;
-        $edict->notification = "Novo edital - ".$edict->description;
+        $edict->notification = "Novo edital - " . $edict->description;
 
         if (empty($edict->description) or empty($edict->title) or empty($edict->roles) or empty($edict->starts_at) or empty($edict->end_at)) {
             return null;
@@ -61,6 +72,12 @@ class Edict extends BaseModel
 
         $edict->save();
 
+        return $edict;
+    }
+
+    public function retrieveById($id)
+    {
+        $edict = Edict::where('id', '=', $id)->take(1)->get();
         return $edict;
     }
 

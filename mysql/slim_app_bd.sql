@@ -44,7 +44,7 @@ create table if not exists `slim_app`.`documents`(
   `id` int auto_increment not null,
   `description` varchar(100) not null,
   `user_id` int (10) not null,
-  `edict_id` int (10) not null,
+  `edict_id` int (10),
   `file_url` varchar(255) not null,
   `created_at` datetime not null,
   `updated_at` datetime not null,

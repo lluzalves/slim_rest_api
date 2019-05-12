@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Handlers\PasswordHandler;
+use App\Models\Document;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 
@@ -45,7 +46,34 @@ class UserController extends BaseController
         }
     }
 
-    public function requestUsers($request, $response, $next)
+    public function requestUsersByEdict($request, $response, $args)
+    {
+        if ($args['edict_id'] != null) {
+            $documents = Document::where('edict_id', '=', $args['edict_id'])->get();
+            if ($documents->count() > 0) {
+                foreach ($documents as $_document) {
+                    $userIds[] = $_document->user_id;
+                }
+                $users = User::whereIn('id', $userIds)->get();
+                foreach ($users as $_user) {
+                    $payload[] = $_user->output();
+                }
+
+                return $response->withStatus(200)->withJson([
+                    'message' => 'Success',
+                    'code' => 200,
+                    'users' => $payload
+                ]);
+            } else if ($documents->count() <= 0) {
+                return $this->response($response, 'No user available', 200);
+            } else {
+                return $this->response($response, 'Not allowed to access this content', 401);
+            }
+        }
+    }
+
+    public
+    function requestUsers($request, $response, $next)
     {
         $user = User::user()->getUser($this->getUserToken($request));
         if ($user[0]->role = 'admin') {
@@ -68,7 +96,8 @@ class UserController extends BaseController
         }
     }
 
-    public function delete($request, $response, $args)
+    public
+    function delete($request, $response, $args)
     {
         if (!empty($args['id'])) {
             if (User::user()->remove($args['id'])) {
@@ -82,7 +111,8 @@ class UserController extends BaseController
     }
 
 
-    public function retrieveUserByEmail($request, $response, $args)
+    public
+    function retrieveUserByEmail($request, $response, $args)
     {
         if (!empty($args['email'])) {
             $user = User::user()->retrieveUserByEmail($args['email']);
@@ -101,7 +131,8 @@ class UserController extends BaseController
         }
     }
 
-    public function retrieveUserByProntuario($request, $response, $args)
+    public
+    function retrieveUserByProntuario($request, $response, $args)
     {
         if (!empty($args['prontuario'])) {
             $user = User::user()->retrieveUserByProntuario($args['prontuario']);
@@ -120,7 +151,8 @@ class UserController extends BaseController
         }
     }
 
-    public function updateInfo($request, $response, $args)
+    public
+    function updateInfo($request, $response, $args)
     {
         if (!empty($args['email'])) {
             $user = User::user()->updateEmail($this->getUserToken($request), $request->getParam('email', ''));
@@ -134,7 +166,8 @@ class UserController extends BaseController
         }
     }
 
-    public function recoverCredentials($request, $response, $next)
+    public
+    function recoverCredentials($request, $response, $next)
     {
         $email = $request->getParsedBodyParam('email', '');
         if (PasswordHandler::resetPassword($email)) {

@@ -10,6 +10,7 @@ use App\Middleware\BasicAuth;
 
 $app->group('/user', function () {
     $this->get('/all', UserController::class . ':requestUsers');
+    $this->get('/all/edict/{edict_id}', UserController::class . ':requestUsersByEdict');
     $this->get('/{email}', UserController::class . ':retrieveUserByEmail');
     $this->get('/filter/{prontuario}', UserController::class . ':retrieveUserByProntuario');
     $this->delete('/{id}', UserController::class . ':delete');
@@ -36,6 +37,8 @@ $app->group('/recover', function () {
 
 $app->group('/edict', function () {
     $this->get('/all',EdictController::class . ':allEdicts');
+    $this->get('/user/all', EdictController::class . ':allEdictsType');
+    $this->get('/details/{edict_id}',EdictController::class . ':edictDetails');
     $this->post('/add', EdictController::class . ':create');
 });
 
