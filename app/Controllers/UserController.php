@@ -13,7 +13,7 @@ class UserController extends BaseController
     public function create($request, $response, $args)
     {
         try {
-            $user = UserretrieveUserByEmail::user()->create($request);
+            $user = User::user()->create($request);
         } catch (QueryException $query_exception) {
             return $response->withStatus(409)->withJson($query_exception->getMessage());
         }

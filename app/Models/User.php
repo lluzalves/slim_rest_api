@@ -176,7 +176,7 @@ class User extends BaseModel
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'ifspdocs@gmail.com';
-            $mail->Password = 'Ifsp889!!';
+            $mail->Password = 'Ifsp8686!';
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
 

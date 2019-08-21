@@ -8,7 +8,6 @@ class Document extends BaseModel
 
     public function output()
     {
-
         $output = [];
         $output['id'] = $this->id;
         $output['description'] = $this->description;

@@ -53,7 +53,7 @@ create table if not exists `slim_app`.`documents`(
   `type` varchar(100) not null,
    primary key (id),
    foreign key (user_id) references users(id),
-   foreign key (edict_id) references edict(id))
+   foreign key (edict_id) references edicts(id))
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- create user notification table
