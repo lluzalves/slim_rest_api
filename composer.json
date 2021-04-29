@@ -3,7 +3,7 @@
         "slim/slim": "^3.11",
         "slim/twig-view": "^2.4",
         "tuupola/slim-jwt-auth": "^3.1",
-        "illuminate/database": "^5.7",
+        "illuminate/database": "^6.20",
         "tuupola/slim-basic-auth": "^3.2",
       "ext-json": "*",
         "phpmailer/phpmailer": "^6.0",
